@@ -38,13 +38,14 @@ The server reloads automatically when you edit `main.py`. Stop it with `Ctrl+C`.
 
 ## AI briefings (IBM Bob)
 
-Without a key, briefings show source excerpts (`mode: "fallback"`). To turn on AI, install Bob Shell and start with your key:
+Without a key, briefings show source excerpts (`mode: "fallback"`). To turn on AI, install Bob Shell and put your key in `.env.local` once:
 
 ```bash
-BOB_API_KEY=your-key python main.py          # Windows: $env:BOB_API_KEY="your-key"; python main.py
+cp .env.example .env.local    # then edit .env.local: BOB_API_KEY=your-key
+python main.py                # picks the key up automatically
 ```
 
-Never commit the key.
+`.env.local` is git-ignored. Never commit the key.
 
 ## API (for the frontend)
 
@@ -56,7 +57,13 @@ Interactive API docs: http://localhost:3001/docs
 ## Data
 
 - `data/conflicts.json`: which countries are highlighted (from UCDP; verify each and set `verified: true`).
-- `data/reports/<iso3>.json`: saved reports, each `{title, source, date, url, text}` with paragraphs separated by blank lines. Replace the SAMPLE entries with real reports.
+- `data/reports/<iso3>.json`: saved reports, each `{title, source, date, url, text}` with paragraphs separated by blank lines. Refresh them from ReliefWeb with:
+
+  ```bash
+  python scripts/fetch_reports.py          # every country with hasBriefing; or e.g. SDN UKR
+  ```
+
+  It keeps the 12 newest English reports per country from ReliefWeb's public RSS feeds. Report text belongs to the original publishers; we store it only to cite and link back.
 
 ## Tests
 

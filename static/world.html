@@ -138,6 +138,75 @@
   .legend-row { display: flex; align-items: center; gap: 8px; margin: 0; }
   .legend .note a { color: inherit; }
 
+  .briefing {
+    position: absolute;
+    top: calc(52px + env(safe-area-inset-top, 0px));
+    right: max(16px, env(safe-area-inset-right, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: min(400px, calc(100% - 32px));
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: 6px;
+    backdrop-filter: blur(6px);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .briefing[hidden] { display: none; }
+  .app.briefing-open .legend { display: none; }
+  .briefing-head { padding: 14px 16px 10px; border-bottom: 1px solid var(--panel-line); display: grid; gap: 4px; position: relative; }
+  .briefing-close {
+    position: absolute; top: 10px; right: 10px;
+    width: 32px; height: 32px; border-radius: 4px;
+    border: 1px solid transparent; background: transparent; color: var(--muted);
+    font-size: 1.25rem; line-height: 1; cursor: pointer;
+  }
+  .briefing-close:hover { color: var(--ink); border-color: var(--panel-line); }
+  .briefing-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .badge {
+    font: 500 0.6875rem var(--font-ui); letter-spacing: 0.02em;
+    padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--panel-line); color: var(--muted);
+  }
+  .badge.ai { color: var(--ink); border-color: var(--accent); }
+  .badge.warn { color: var(--war); border-color: var(--war); }
+  .briefing-body { padding: 12px 16px 16px; overflow-y: auto; display: grid; gap: 16px; align-content: start; }
+  .briefing h3 { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 6px; font-weight: 500; }
+  .bullets { margin: 0; padding-left: 18px; display: grid; gap: 8px; font-size: 0.875rem; line-height: 1.45; }
+  .cite {
+    font: 500 0.6875rem var(--font-data); color: var(--accent);
+    text-decoration: none; margin-left: 2px; vertical-align: super;
+  }
+  .cite:hover { text-decoration: underline; }
+  .gaps { font-size: 0.8125rem; color: var(--muted); margin: 0; line-height: 1.45; }
+  .sources { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 0.8125rem; line-height: 1.35; }
+  .sources li { display: grid; grid-template-columns: 22px 1fr; gap: 4px; scroll-margin: 12px; }
+  .sources li:target { background: var(--land-hover); border-radius: 4px; }
+  .sources .n { font-family: var(--font-data); color: var(--muted); }
+  .sources a { color: var(--ink); }
+  .sources .src-meta { display: block; color: var(--muted); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+  .official { border: 1px solid var(--panel-line); border-radius: 6px; padding: 10px 12px; display: grid; gap: 6px; }
+  .official ul { margin: 0; padding-left: 18px; font-size: 0.8125rem; display: grid; gap: 4px; }
+  .official a { color: var(--ink); }
+  .disclaimer { font-size: 0.75rem; color: var(--muted); margin: 0; line-height: 1.4; border-top: 1px solid var(--panel-line); padding-top: 10px; }
+  .ask { display: flex; gap: 6px; }
+  .ask input {
+    flex: 1; min-width: 0;
+    font: 0.8125rem var(--font-ui); color: var(--ink);
+    background: transparent; border: 1px solid var(--panel-line); border-radius: 4px; padding: 6px 8px;
+  }
+  .ask input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .ask button {
+    font: 500 0.8125rem var(--font-ui); color: var(--ink); background: transparent;
+    border: 1px solid var(--panel-line); border-radius: 4px; padding: 6px 10px; cursor: pointer;
+  }
+  .ask button:hover { border-color: var(--accent); color: var(--accent); }
+  .ask button:disabled { opacity: 0.45; cursor: default; }
+  .loading { font-size: 0.875rem; color: var(--muted); margin: 0; display: flex; align-items: center; gap: 8px; }
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--panel-line); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+
   @media (max-width: 480px) {
     .hint { flex-basis: 100%; }
     .name { font-size: 1.125rem; }
@@ -145,6 +214,8 @@
   @media (max-width: 720px) {
     .legend { top: calc(84px + env(safe-area-inset-top, 0px)); bottom: auto; max-width: 200px; }
     .legend .note { display: none; }
+    .briefing { top: auto; height: 62%; left: max(16px, env(safe-area-inset-left, 0px)); width: auto; }
+    .app.briefing-open .card { display: none; }
   }
 </style>
 
@@ -170,6 +241,16 @@
     <p class="eyebrow">Briefings available</p>
     <p class="legend-row"><span class="swatch war"></span>War</p>
     <p class="note" id="legend-source">Loading conflict data…</p>
+  </aside>
+
+  <aside class="briefing" id="briefing" aria-label="Humanitarian briefing" hidden>
+    <div class="briefing-head">
+      <p class="eyebrow">Humanitarian briefing</p>
+      <p class="name" id="briefing-country"></p>
+      <div class="badges" id="briefing-badges"></div>
+      <button class="briefing-close" id="briefing-close" type="button" aria-label="Close briefing">×</button>
+    </div>
+    <div class="briefing-body" id="briefing-body" aria-live="polite"></div>
   </aside>
 </div>
 
@@ -246,6 +327,138 @@ fetch("/static/conflicts.json")
     document.getElementById("legend-source").textContent = "Conflict data failed to load.";
   });
 
+// Briefing panel: countries with hasBriefing in /api/conflicts open a cited briefing from /api/briefing.
+const appEl = document.querySelector(".app");
+const briefingEl = document.getElementById("briefing");
+const briefingBodyEl = document.getElementById("briefing-body");
+const briefingBadgesEl = document.getElementById("briefing-badges");
+let briefingByMapId = {};
+let briefingRequest = null;
+
+fetch("/api/conflicts")
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(data => {
+    for (const c of data.countries) if (c.hasBriefing && c.mapId) briefingByMapId[c.mapId] = c;
+    if (active) openBriefing(active.datum);
+  })
+  .catch(() => {});
+
+document.getElementById("briefing-close").addEventListener("click", () => closeBriefing());
+
+const el = (tag, props = {}, ...children) => {
+  const node = Object.assign(document.createElement(tag), props);
+  node.append(...children);
+  return node;
+};
+
+function formatDate(iso) {
+  const d = new Date(String(iso).slice(0, 10) + "T00:00:00Z");
+  return isNaN(d) ? iso : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
+function safeUrl(url) {
+  try { const u = new URL(url); return u.protocol === "https:" || u.protocol === "http:" ? u.href : null; } catch { return null; }
+}
+
+function openBriefing(d) {
+  const meta = briefingByMapId[d.id];
+  if (!meta) { closeBriefing(); return false; }
+  document.getElementById("briefing-country").textContent = meta.name;
+  briefingEl.hidden = false;
+  appEl.classList.add("briefing-open");
+  loadBriefing(meta, "");
+  return true;
+}
+
+function closeBriefing() {
+  if (briefingRequest) briefingRequest.abort();
+  briefingRequest = null;
+  briefingEl.hidden = true;
+  appEl.classList.remove("briefing-open");
+}
+
+function loadBriefing(meta, question) {
+  if (briefingRequest) briefingRequest.abort();
+  const ctrl = briefingRequest = new AbortController();
+  briefingBadgesEl.innerHTML = "";
+  briefingBodyEl.innerHTML = "";
+  briefingBodyEl.append(el("p", { className: "loading" }, el("span", { className: "spinner" }),
+    question ? "Searching the sources for your question…" : "Gathering sources and writing the briefing… this can take up to a minute."));
+  fetch("/api/briefing", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ iso3: meta.iso3, question }),
+    signal: ctrl.signal,
+  })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(b => { if (briefingRequest === ctrl) renderBriefing(meta, b, question); })
+    .catch(err => {
+      if (err.name === "AbortError" || briefingRequest !== ctrl) return;
+      briefingBodyEl.innerHTML = "";
+      briefingBodyEl.append(el("p", { className: "gaps" }, "The briefing couldn't be loaded. Check that the server is running and try again."));
+      renderOfficial(meta.officialLinks || []);
+    });
+}
+
+function renderBriefing(meta, b, question) {
+  briefingBadgesEl.innerHTML = "";
+  briefingBodyEl.innerHTML = "";
+  const sources = b.sources || [];
+  if (b.mode === "ai") briefingBadgesEl.append(el("span", { className: "badge ai" }, "AI summary · IBM Bob"));
+  else if (b.mode === "fallback") briefingBadgesEl.append(el("span", { className: "badge" }, "Source excerpts · AI unavailable"));
+  if (b.newestSource) briefingBadgesEl.append(el("span", { className: "badge" }, "Newest source " + formatDate(b.newestSource)));
+  if (sources.some(s => /SAMPLE/.test(s.title + s.source))) briefingBadgesEl.append(el("span", { className: "badge warn" }, "Placeholder data"));
+
+  const sourceId = (n) => `src-${meta.iso3}-${n}`;
+  if (b.bullets && b.bullets.length) {
+    const list = el("ul", { className: "bullets" });
+    for (const bullet of b.bullets) {
+      const li = el("li", {}, bullet.text);
+      for (const n of bullet.cites) {
+        const src = sources.find(s => s.n === n);
+        li.append(el("a", { className: "cite", href: "#" + sourceId(n), title: src ? `${src.source}, ${formatDate(src.date)}` : "" }, `[${n}]`));
+      }
+      list.append(li);
+    }
+    briefingBodyEl.append(el("section", {}, el("h3", {}, question ? `On: “${question}”` : "Current situation"), list));
+  }
+  if (b.gaps) briefingBodyEl.append(el("section", {}, el("h3", {}, "What the sources don't cover"), el("p", { className: "gaps" }, b.gaps)));
+
+  if (b.mode !== "none") {
+    const form = el("form", { className: "ask" });
+    const input = el("input", { type: "text", maxLength: 300, placeholder: "Ask about this briefing, e.g. food insecurity", value: question, ariaLabel: "Ask a question about this country" });
+    const btn = el("button", { type: "submit" }, "Ask");
+    form.append(input, btn);
+    form.addEventListener("submit", (e) => { e.preventDefault(); loadBriefing(meta, input.value.trim()); });
+    briefingBodyEl.append(form);
+  }
+
+  if (sources.length) {
+    const list = el("ol", { className: "sources" });
+    for (const s of sources) {
+      const url = safeUrl(s.url);
+      const title = url ? el("a", { href: url, target: "_blank", rel: "noopener" }, s.title) : el("span", {}, s.title);
+      list.append(el("li", { id: sourceId(s.n) }, el("span", { className: "n" }, s.n + "."),
+        el("span", {}, title, el("span", { className: "src-meta" }, `${s.source} · ${formatDate(s.date)}`))));
+    }
+    briefingBodyEl.append(el("section", {}, el("h3", {}, "Sources"), list));
+  }
+
+  renderOfficial(b.links || meta.officialLinks || []);
+  briefingBodyEl.append(el("p", { className: "disclaimer" },
+    b.mode === "ai"
+      ? "Summary generated by AI from the sources listed, and only those. It can be wrong or out of date: check the sources before relying on it. This is not safety or evacuation advice."
+      : "This is not safety or evacuation advice. Check the sources and official channels for current information."));
+}
+
+function renderOfficial(links) {
+  const usable = links.map(l => ({ ...l, url: safeUrl(l.url) })).filter(l => l.url);
+  if (!usable.length) return;
+  const list = el("ul");
+  for (const l of usable) list.append(el("li", {}, el("a", { href: l.url, target: "_blank", rel: "noopener" }, l.label)));
+  briefingBodyEl.append(el("section", { className: "official" }, el("h3", {}, "Official sources · not generated by AI"), list));
+}
+
 function renderConflictInfo(d) {
   conflictInfoEl.innerHTML = "";
   const c = conflictFor(d);
@@ -293,10 +506,16 @@ function prefersReducedMotion() {
 
 function zoomTo(d, duration) {
   const [[x0, y0], [x1, y1]] = path.bounds(d);
+  // With the briefing open, fit the country into the part of the map the panel doesn't cover.
+  let w = width, h = height;
+  if (!briefingEl.hidden) {
+    const box = briefingEl.getBoundingClientRect(), map = svg.node().getBoundingClientRect();
+    if (box.left - map.left > width / 2) w = box.left - map.left - 16; else h = box.top - map.top - 16;
+  }
   const pad = 0.85;
-  const k = Math.min(40, pad / Math.max((x1 - x0) / width, (y1 - y0) / height));
+  const k = Math.min(40, pad / Math.max((x1 - x0) / w, (y1 - y0) / h));
   const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-  const t = d3.zoomIdentity.translate(width / 2, height / 2).scale(k).translate(-cx, -cy);
+  const t = d3.zoomIdentity.translate(w / 2, h / 2).scale(k).translate(-cx, -cy);
   svg.transition()
     .duration(prefersReducedMotion() ? 0 : duration)
     .ease(d3.easeCubicInOut)
@@ -318,6 +537,7 @@ function select(d, el) {
   coordsEl.textContent = "Centroid " + formatCoord(lat, "N", "S") + "  " + formatCoord(lon, "E", "W");
   resetBtn.disabled = false;
   renderConflictInfo(d);
+  openBriefing(d);
   zoomTo(d, 1100);
 }
 
@@ -328,6 +548,7 @@ function reset() {
   nameEl.textContent = "No country selected";
   coordsEl.textContent = "Natural Earth, 1:50m";
   conflictInfoEl.hidden = true;
+  closeBriefing();
   resetBtn.disabled = true;
   svg.transition()
     .duration(prefersReducedMotion() ? 0 : 900)

@@ -8,9 +8,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.concurrency import run_in_threadpool
 from fastapi.staticfiles import StaticFiles
+from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
-from briefing import build_briefing, load_conflicts
+# Secrets such as BOB_API_KEY live in .env.local (git-ignored). Variables already set in the shell take priority.
+load_dotenv(Path(__file__).parent / ".env.local")
+
+from briefing import build_briefing, load_conflicts  # noqa: E402
 
 STATIC_DIR = Path(__file__).parent / "static"
 

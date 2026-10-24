@@ -1,0 +1,59 @@
+{
+  "dataset": "Uppsala Conflict Data Program (UCDP) — TEAM: confirm each country below against the latest UCDP data and update this line with the version/year you used.",
+  "datasetUrl": "https://ucdp.uu.se/",
+  "basemapNote": "Country shapes from Natural Earth (1:50m). Disputed borders are shown as in that source and do not imply any position.",
+  "countries": [
+    {
+      "iso3": "SDN",
+      "name": "Sudan",
+      "hasBriefing": true,
+      "verified": false,
+      "officialLinks": [
+        {
+          "label": "ReliefWeb — Sudan updates",
+          "url": "https://reliefweb.int/country/sdn"
+        }
+      ],
+      "mapId": "729"
+    },
+    {
+      "iso3": "UKR",
+      "name": "Ukraine",
+      "hasBriefing": true,
+      "verified": false,
+      "officialLinks": [
+        {
+          "label": "ReliefWeb — Ukraine updates",
+          "url": "https://reliefweb.int/country/ukr"
+        }
+      ],
+      "mapId": "804"
+    },
+    {
+      "iso3": "MMR",
+      "name": "Myanmar",
+      "hasBriefing": false,
+      "verified": false,
+      "officialLinks": [
+        {
+          "label": "ReliefWeb — Myanmar updates",
+          "url": "https://reliefweb.int/country/mmr"
+        }
+      ],
+      "mapId": "104"
+    },
+    {
+      "iso3": "COD",
+      "name": "Democratic Republic of the Congo",
+      "hasBriefing": false,
+      "verified": false,
+      "officialLinks": [
+        {
+          "label": "ReliefWeb — DR Congo updates",
+          "url": "https://reliefweb.int/country/cod"
+        }
+      ],
+      "mapId": "180"
+    }
+  ]
+}

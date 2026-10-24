@@ -1,0 +1,9 @@
+[
+  {
+    "title": "SAMPLE — replace with a real report title",
+    "source": "SAMPLE SOURCE (e.g. OCHA)",
+    "date": "2026-10-01",
+    "url": "https://reliefweb.int/country/sdn",
+    "text": "SAMPLE TEXT. This placeholder shows the format only and is not real information about Sudan. Replace it with paragraphs copied from a real, recent humanitarian report about Sudan.\n\nKeep each paragraph separated by a blank line. Mention displacement, humanitarian access, food insecurity, health and funding where the report covers them, so retrieval has something to find."
+  }
+]

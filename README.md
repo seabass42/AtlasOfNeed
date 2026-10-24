@@ -36,10 +36,42 @@ The server reloads automatically when you edit `main.py`. Stop it with `Ctrl+C`.
 - **Scroll** to zoom, **drag** to pan
 - **Tab / Enter** to move between and select countries with the keyboard
 
+## AI briefings (IBM Bob)
+
+Without a key, briefings show source excerpts (`mode: "fallback"`). To turn on AI, install Bob Shell and start with your key:
+
+```bash
+BOB_API_KEY=your-key python main.py          # Windows: $env:BOB_API_KEY="your-key"; python main.py
+```
+
+Never commit the key.
+
+## API (for the frontend)
+
+- `GET /api/conflicts` returns `{dataset, datasetUrl, basemapNote, countries: [{iso3, name, mapId, hasBriefing, verified, officialLinks}]}`. `mapId` matches the country `id` in the d3 map (Sudan = "729").
+- `POST /api/briefing` with `{"iso3": "SDN", "question": "optional"}` returns `{country, mode: "ai"|"fallback"|"none", bullets: [{text, cites: [1,2]}], gaps, newestSource, sources: [{n, title, source, date, url}], links}`. Each number in `cites` matches a `sources[].n`.
+
+Interactive API docs: http://localhost:3001/docs
+
+## Data
+
+- `data/conflicts.json`: which countries are highlighted (from UCDP; verify each and set `verified: true`).
+- `data/reports/<iso3>.json`: saved reports, each `{title, source, date, url, text}` with paragraphs separated by blank lines. Replace the SAMPLE entries with real reports.
+
+## Tests
+
+```bash
+pip install pytest httpx
+python -m pytest tests -q
+```
+
 ## Project layout
 
 ```
-main.py             FastAPI backend: serves the map at "/"
+main.py             FastAPI backend: map page + /api/conflicts + /api/briefing
+briefing.py         Retrieval, IBM Bob call, citation check, fallback
+data/               Conflict list and saved reports
 static/world.html   Frontend: the map (d3 + topojson, Natural Earth 1:50m borders)
+tests/              Backend tests
 requirements.txt    Python dependencies
 ```

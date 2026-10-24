@@ -1,10 +1,15 @@
 # Backend for the Atlas of Need MVP.
-# Serves the map page at "/". API routes (conflicts, briefings, alerts) will be added here later.
+# Serves the map page at "/" and the API used by the briefing panel.
 import os
+import re
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.concurrency import run_in_threadpool
+from pydantic import BaseModel, Field
+
+from briefing import build_briefing, load_conflicts
 
 STATIC_DIR = Path(__file__).parent / "static"
 
@@ -17,7 +22,29 @@ def index():
     return FileResponse(STATIC_DIR / "world.html")
 
 
+@app.get("/api/conflicts")
+def conflicts():
+    """Countries to highlight. Each has iso3, name, mapId (the numeric id used by the d3 map), hasBriefing, officialLinks."""
+    return load_conflicts()
+
+
+class BriefingRequest(BaseModel):
+    iso3: str = Field(..., description="3-letter country code, e.g. SDN")
+    question: str = Field("", max_length=300)
+
+
+@app.post("/api/briefing")
+async def briefing(req: BriefingRequest):
+    """Cited briefing for one country. mode is 'ai', 'fallback', or 'none'."""
+    iso3 = req.iso3.upper()
+    if not re.fullmatch(r"[A-Z]{3}", iso3):
+        raise HTTPException(400, "Bad country code")
+    # Bob can take several seconds; run it off the main thread so the server stays responsive.
+    return await run_in_threadpool(build_briefing, iso3, req.question.strip())
+
+
 if __name__ == "__main__":
     import uvicorn
 
+    print("AI mode:", "IBM Bob (bob run)" if os.environ.get("BOB_API_KEY") else "OFF (no BOB_API_KEY) - using source excerpts fallback")
     uvicorn.run("main:app", host="127.0.0.1", port=int(os.environ.get("PORT", 3001)), reload=True)

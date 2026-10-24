@@ -163,6 +163,23 @@
   .briefing-close:hover { color: var(--ink); border-color: var(--panel-line); }
   .briefing-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .tabs { display: flex; gap: 4px; margin-top: 8px; }
+  .tabs button {
+    font: 500 0.8125rem var(--font-ui); color: var(--muted); background: transparent;
+    border: 1px solid var(--panel-line); border-radius: 4px; padding: 5px 10px; cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] { color: var(--ink); border-color: var(--ink); }
+  .tabs button:hover { color: var(--ink); }
+  .tabs button:focus-visible, .tabs a:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .tabs a.update-link {
+    margin-left: auto; font: 500 0.8125rem var(--font-ui); color: var(--accent); text-decoration: none;
+    border: 1px solid var(--accent); border-radius: 4px; padding: 5px 10px;
+  }
+  .tabs a.update-link:hover { text-decoration: underline; }
+  .cite.earlier { color: var(--muted); }
+  .period { font: 500 0.625rem var(--font-ui); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+    border: 1px solid var(--panel-line); border-radius: 3px; padding: 0 4px; margin-left: 4px; vertical-align: 1px; }
+  .period.new { color: var(--accent); border-color: var(--accent); }
   .badge {
     font: 500 0.6875rem var(--font-ui); letter-spacing: 0.02em;
     padding: 2px 8px; border-radius: 999px;
@@ -248,6 +265,11 @@
       <p class="eyebrow">Humanitarian briefing</p>
       <p class="name" id="briefing-country"></p>
       <div class="badges" id="briefing-badges"></div>
+      <div class="tabs" role="tablist" aria-label="Briefing view">
+        <button type="button" role="tab" id="tab-current" aria-selected="true">Current situation</button>
+        <button type="button" role="tab" id="tab-changes" aria-selected="false">What's new · 7 days</button>
+        <a class="update-link" id="update-link" href="/update" target="_blank" rel="noopener" title="One-page sourced update for donors or members">Weekly update ↗</a>
+      </div>
       <button class="briefing-close" id="briefing-close" type="button" aria-label="Close briefing">×</button>
     </div>
     <div class="briefing-body" id="briefing-body" aria-live="polite"></div>
@@ -368,13 +390,28 @@ function safeUrl(url) {
   try { const u = new URL(url); return u.protocol === "https:" || u.protocol === "http:" ? u.href : null; } catch { return null; }
 }
 
+let briefingMeta = null;
+const tabCurrent = document.getElementById("tab-current");
+const tabChanges = document.getElementById("tab-changes");
+tabCurrent.addEventListener("click", () => showView("current"));
+tabChanges.addEventListener("click", () => showView("changes"));
+
+function showView(view) {
+  tabCurrent.setAttribute("aria-selected", String(view === "current"));
+  tabChanges.setAttribute("aria-selected", String(view === "changes"));
+  if (!briefingMeta) return;
+  if (view === "changes") loadChanges(briefingMeta); else loadBriefing(briefingMeta, "");
+}
+
 function openBriefing(d) {
   const meta = briefingByMapId[d.id];
   if (!meta) { closeBriefing(); return false; }
+  briefingMeta = meta;
   document.getElementById("briefing-country").textContent = meta.name;
+  document.getElementById("update-link").href = `/update?iso3=${encodeURIComponent(meta.iso3)}`;
   briefingEl.hidden = false;
   appEl.classList.add("briefing-open");
-  loadBriefing(meta, "");
+  showView("current");
   return true;
 }
 
@@ -385,27 +422,105 @@ function closeBriefing() {
   appEl.classList.remove("briefing-open");
 }
 
-function loadBriefing(meta, question) {
+// One request at a time: a newer request (other tab, other country, a question) cancels the previous one.
+function requestPanel(meta, url, body, loadingText, render) {
   if (briefingRequest) briefingRequest.abort();
   const ctrl = briefingRequest = new AbortController();
   briefingBadgesEl.innerHTML = "";
   briefingBodyEl.innerHTML = "";
-  briefingBodyEl.append(el("p", { className: "loading" }, el("span", { className: "spinner" }),
-    question ? "Searching the sources for your question…" : "Gathering sources and writing the briefing… this usually takes a few seconds."));
-  fetch("/api/briefing", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ iso3: meta.iso3, question }),
-    signal: ctrl.signal,
-  })
+  briefingBodyEl.append(el("p", { className: "loading" }, el("span", { className: "spinner" }), loadingText));
+  fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: ctrl.signal })
     .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then(b => { if (briefingRequest === ctrl) renderBriefing(meta, b, question); })
+    .then(b => { if (briefingRequest === ctrl) render(b); })
     .catch(err => {
       if (err.name === "AbortError" || briefingRequest !== ctrl) return;
       briefingBodyEl.innerHTML = "";
-      briefingBodyEl.append(el("p", { className: "gaps" }, "The briefing couldn't be loaded. Check that the server is running and try again."));
+      briefingBodyEl.append(el("p", { className: "gaps" }, "This couldn't be loaded. Check that the server is running and try again."));
       renderOfficial(meta.officialLinks || []);
     });
+}
+
+function loadBriefing(meta, question) {
+  requestPanel(meta, "/api/briefing", { iso3: meta.iso3, question },
+    question ? "Searching the sources for your question…" : "Gathering sources and writing the briefing… this usually takes a few seconds.",
+    b => renderBriefing(meta, b, question));
+}
+
+function loadChanges(meta) {
+  requestPanel(meta, "/api/changes", { iso3: meta.iso3, days: 7 },
+    "Comparing this week's reports with earlier ones… this usually takes a few seconds.",
+    b => renderChanges(meta, b));
+}
+
+const CHANGE_GROUPS = [
+  ["areas", "Newly affected areas"],
+  ["displacement", "Displacement"],
+  ["access", "Humanitarian access"],
+  ["needs", "Needs and funding"],
+  ["other", "Other developments"],
+];
+const shortDate = (iso) => formatDate(iso).replace(/ \d{4}$/, "");
+
+function renderChanges(meta, b) {
+  briefingBadgesEl.innerHTML = "";
+  briefingBodyEl.innerHTML = "";
+  if (b.mode === "ai") briefingBadgesEl.append(el("span", { className: "badge ai" }, "AI comparison · IBM Bob"));
+  else if (b.mode === "fallback") briefingBadgesEl.append(el("span", { className: "badge" }, "Report list · AI unavailable"));
+  if (b.window) briefingBadgesEl.append(el("span", { className: "badge" }, `${shortDate(b.window.from)} – ${formatDate(b.window.to)}`));
+  const sources = b.sources || [];
+  if (sources.some(s => /SAMPLE/.test(s.title + s.source))) briefingBadgesEl.append(el("span", { className: "badge warn" }, "Placeholder data"));
+
+  if (b.window && b.baseline) {
+    briefingBodyEl.append(el("p", { className: "gaps" },
+      `${b.newReports} report${b.newReports === 1 ? "" : "s"} published ${shortDate(b.window.from)} – ${formatDate(b.window.to)}, `
+      + `compared with ${b.earlierReports} from ${shortDate(b.baseline.from)} – ${formatDate(b.baseline.to)}.`));
+  }
+
+  const sourceId = (n) => `chg-${meta.iso3}-${n}`;
+  const byN = Object.fromEntries(sources.map(s => [s.n, s]));
+  const changes = b.changes || [];
+  if (!changes.length) {
+    briefingBodyEl.append(el("section", {}, el("h3", {}, "What's new"),
+      el("p", { className: "status" }, b.mode === "none" ? "No recent reports to compare." : "Nothing new stood out in this week's reports."),
+      el("p", { className: "gaps" }, b.gaps || "")));
+  }
+  for (const [key, title] of CHANGE_GROUPS) {
+    const items = changes.filter(c => c.category === key);
+    if (!items.length) continue;
+    const list = el("ul", { className: "bullets" });
+    for (const c of items) {
+      const li = el("li", {}, c.text);
+      for (const n of c.cites) {
+        const src = byN[n];
+        const earlier = src && src.period === "earlier";
+        li.append(el("a", { className: "cite" + (earlier ? " earlier" : ""), href: "#" + sourceId(n),
+          title: src ? `${earlier ? "Earlier report: " : ""}${src.source}, ${formatDate(src.date)}` : "" }, `[${n}]`));
+      }
+      list.append(li);
+    }
+    briefingBodyEl.append(el("section", {}, el("h3", {}, title), list));
+  }
+  if (changes.length && b.gaps) {
+    briefingBodyEl.append(el("section", {}, el("h3", {}, "What the reports don't let us compare"), el("p", { className: "gaps" }, b.gaps)));
+  }
+
+  if (sources.length && changes.length) {
+    const list = el("ol", { className: "sources" });
+    for (const s of sources) {
+      const url = safeUrl(s.url);
+      const title = url ? el("a", { href: url, target: "_blank", rel: "noopener" }, s.title) : el("span", {}, s.title);
+      list.append(el("li", { id: sourceId(s.n) }, el("span", { className: "n" }, s.n + "."),
+        el("span", {}, title, el("span", { className: "period " + s.period }, s.period === "new" ? "New" : "Earlier"),
+          el("span", { className: "src-meta" }, `${s.source} · ${formatDate(s.date)}`))));
+    }
+    briefingBodyEl.append(el("section", {}, el("h3", {}, "Sources"), list));
+  }
+
+  renderOfficial(b.links || meta.officialLinks || []);
+  briefingBodyEl.append(el("p", { className: "disclaimer" },
+    (b.mode === "ai" ? "Comparison generated by AI from the reports listed, and only those. \"New\" means reported in the last 7 days, "
+      + "not necessarily the first time it happened. Check the sources before relying on it. " : "")
+    + "This is not safety or evacuation advice."));
 }
 
 function renderBriefing(meta, b, question) {

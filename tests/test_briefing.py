@@ -137,3 +137,66 @@ def test_api_profile():
     assert facts and all(f["quote"] and f["url"].startswith("https://") and f["date"] for f in facts)
     assert client.get("/api/profile/xyz").status_code == 404
     assert client.get("/api/profile/x1").status_code == 400
+
+
+def test_changes_splits_new_and_earlier_and_requires_new_citations(monkeypatch):
+    monkeypatch.setenv("BOB_API_KEY", "test")
+    seen = {}
+
+    def fake_bob(prompt):
+        seen["prompt"] = prompt
+        n_new = prompt.count("] NEW (")
+        return json.dumps({"last_message": json.dumps({"changes": [
+            {"category": "displacement", "text": "Cites a new and an earlier report", "cites": [1, n_new + 1]},
+            {"category": "areas", "text": "Cites only an earlier report", "cites": [n_new + 1]},
+            {"category": "made-up", "text": "Unknown category", "cites": [1]},
+        ], "gaps": "g"})})
+
+    monkeypatch.setattr(briefing, "run_bob", fake_bob)
+    d = client.post("/api/changes", json={"iso3": "SDN", "days": 7}).json()
+    assert d["mode"] == "ai" and d["newReports"] > 0 and d["earlierReports"] > 0
+    assert "NEW (" in seen["prompt"] and "EARLIER (" in seen["prompt"]
+    assert [c["text"] for c in d["changes"]] == ["Cites a new and an earlier report", "Unknown category"]
+    assert d["changes"][1]["category"] == "other"
+    periods = {s["n"]: s["period"] for s in d["sources"]}
+    assert periods[d["changes"][0]["cites"][0]] == "new" and periods[d["changes"][0]["cites"][1]] == "earlier"
+
+
+def test_changes_with_no_recent_reports():
+    from datetime import date
+    d = briefing.build_changes("SDN", 7, today=date(2030, 1, 1))
+    assert d["mode"] == "none" and d["changes"] == [] and d["newReports"] == 0
+
+
+def test_update_keeps_cited_sentences_and_uses_verified_key_figures(monkeypatch):
+    monkeypatch.setenv("BOB_API_KEY", "test")
+    monkeypatch.setattr(briefing, "run_bob", lambda prompt: json.dumps({"last_message": json.dumps({
+        "headline": "Over 9 million displaced",  # numbers aren't allowed in the (uncited) headline
+        "summary": [{"text": "Cited summary", "cites": [1]}, {"text": "Uncited claim", "cites": []}],
+        "this_week": [{"text": "Fake citation", "cites": [999]}, {"text": "Real event", "cites": [2]},
+                      {"text": "Key figure in the wrong section", "cites": [prompt.count("] REPORT (") + 1]}],
+        "needs": [{"text": "Only invalid", "cites": [999]}],
+        "response": [], "gaps": "g"})}))
+    d = client.post("/api/update", json={"iso3": "SDN", "audience": "members"}).json()
+    assert d["mode"] == "ai" and d["audience"] == "members"
+    assert [b["text"] for b in d["summary"]] == ["Cited summary"]
+    assert [b["text"] for b in d["this_week"]] == ["Real event"]
+    assert d["needs"] == [] and d["headline"] == ""
+    # Only cited sources are listed, numbered 1..n in reading order, with each URL once.
+    cited = [n for item in d["summary"] + d["keyFigures"] + d["this_week"] for n in item["cites"]]
+    assert [s["n"] for s in d["sources"]] == list(range(1, len(d["sources"]) + 1)) == sorted(set(cited))
+    assert d["summary"][0]["cites"] == [1]
+    assert len({s["url"] for s in d["sources"]}) == len(d["sources"])
+    assert d["keyFigures"] and all(f["cites"] for f in d["keyFigures"])
+
+
+def test_update_rejects_unknown_audience():
+    assert client.post("/api/update", json={"iso3": "SDN", "audience": "press"}).status_code == 422
+
+
+def test_update_is_trimmed_to_fit_one_page():
+    long = "word " * 40
+    out = briefing.validate_update({"headline": "h", "gaps": "",
+        **{k: [{"text": long, "cites": [1]} for _ in range(5)] for k in briefing.UPDATE_SECTIONS}}, n=3, n_reports=3)
+    assert sum(len(b["text"].split()) for k in briefing.UPDATE_SECTIONS for b in out[k]) <= briefing.WORD_BUDGET + 40
+    assert out["summary"] and out["needs"] and out["response"] and len(out["this_week"]) >= 2

@@ -6,6 +6,7 @@ import re
 import threading
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -17,7 +18,7 @@ from pydantic import BaseModel, Field
 # Secrets such as BOB_API_KEY live in .env.local (git-ignored). Variables already set in the shell take priority.
 load_dotenv(Path(__file__).parent / ".env.local")
 
-from briefing import build_briefing, load_conflicts, warm_up  # noqa: E402
+from briefing import build_briefing, build_changes, build_update, load_conflicts, warm_up  # noqa: E402
 
 STATIC_DIR = Path(__file__).parent / "static"
 PROFILES_DIR = Path(__file__).parent / "data" / "profiles"
@@ -39,6 +40,11 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 @app.get("/world.html", include_in_schema=False)
 def index():
     return FileResponse(STATIC_DIR / "world.html")
+
+
+@app.get("/update", include_in_schema=False)
+def update_page():
+    return FileResponse(STATIC_DIR / "update.html")
 
 
 @app.get("/api/profile/{iso3}")
@@ -71,6 +77,35 @@ async def briefing(req: BriefingRequest):
         raise HTTPException(400, "Bad country code")
     # Bob can take several seconds; run it off the main thread so the server stays responsive.
     return await run_in_threadpool(build_briefing, iso3, req.question.strip())
+
+
+class ChangesRequest(BaseModel):
+    iso3: str = Field(..., description="3-letter country code, e.g. SDN")
+    days: int = Field(7, ge=1, le=30, description="Length of the 'new' window in days")
+
+
+@app.post("/api/changes")
+async def changes(req: ChangesRequest):
+    """What's new in the last `days` days compared with earlier reports. mode is 'ai', 'fallback', or 'none'."""
+    iso3 = req.iso3.upper()
+    if not re.fullmatch(r"[A-Z]{3}", iso3):
+        raise HTTPException(400, "Bad country code")
+    return await run_in_threadpool(build_changes, iso3, req.days)
+
+
+class UpdateRequest(BaseModel):
+    iso3: str = Field(..., description="3-letter country code, e.g. SDN")
+    audience: Literal["donors", "members"] = "donors"
+    days: int = Field(7, ge=1, le=30)
+
+
+@app.post("/api/update")
+async def update(req: UpdateRequest):
+    """One-page weekly situation update draft for an NGO or diaspora organisation. Every sentence is cited."""
+    iso3 = req.iso3.upper()
+    if not re.fullmatch(r"[A-Z]{3}", iso3):
+        raise HTTPException(400, "Bad country code")
+    return await run_in_threadpool(build_update, iso3, req.audience, req.days)
 
 
 if __name__ == "__main__":

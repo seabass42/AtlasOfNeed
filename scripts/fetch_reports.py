@@ -14,6 +14,9 @@ from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from archive import add_to_archive  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 REPORTS_DIR = DATA_DIR / "reports"
@@ -176,6 +179,7 @@ def main(codes: list[str]):
         out.write_text(json.dumps(reports, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         dates = sorted(r["date"] for r in reports)
         print(f"{iso3}: wrote {len(reports)} reports ({dates[0]} to {dates[-1]}) to {out.relative_to(ROOT)}")
+        print(f"   {add_to_archive(iso3, reports, origin='reliefweb')} new in data/archive/{iso3.lower()}.json")
     print(f"Done at {datetime.now():%Y-%m-%d %H:%M}. Restart not needed; briefings read these files on each request.")
 
 

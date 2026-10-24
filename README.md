@@ -37,6 +37,8 @@ The server reloads automatically when you edit any `.py` file. Edits to `static/
 - **Scroll** to zoom, **drag** to pan
 - **Tab / Enter** to move between and select countries with the keyboard
 - **Ukraine and Sudan** (in red) open a briefing panel: cited summary, sources with dates, an "Ask" box for focused questions, and official links
+- **Weekly update ↗** (in the panel) opens `/update`: a one-page, sourced situation update that a small NGO or diaspora organisation can send to donors or members. Pick the audience, optionally add your organisation's name (printed only, never sent to the AI), generate, edit any text in place, then **Copy text** for an email or **Print / Save PDF**
+- **What's new · 7 days** (tab in the panel) compares the last 7 days of reports with the weeks before: newly affected areas, displacement, humanitarian access, needs and funding. Each item cites the new report and, when it updates an earlier figure, the earlier one
 
 ## AI briefings (IBM Bob)
 
@@ -84,6 +86,10 @@ Click Ukraine or Sudan: the badge should read **"AI summary · IBM Bob"**. A bri
 - `POST /api/briefing` with `{"iso3": "SDN", "question": "optional"}` returns `{country, mode: "ai"|"fallback"|"no_match"|"none", answered, bullets: [{text, cites: [1,2]}], gaps, newestSource, sources: [{n, title, source, date, url}], links}`. Each number in `cites` matches a `sources[].n`.
   - `answered: false` means the reports don't cover the question. Either no passage is similar enough (`mode: "no_match"`, Bob isn't called, e.g. "what is 1+1"), or Bob read the passages and said they don't answer it (`mode: "ai"`, empty `bullets`). `gaps` explains which. General questions like "what's happening in Sudan?" get the normal briefing.
 
+- `POST /api/changes` with `{"iso3": "SDN", "days": 7}` returns `{country, mode: "ai"|"fallback"|"none", window: {from, to}, baseline: {from, to}, newReports, earlierReports, changes: [{category: "areas"|"displacement"|"access"|"needs"|"other", text, cites}], gaps, sources: [{n, title, source, date, url, period: "new"|"earlier"}], links}`. Every change cites at least one `new` source; changes that don't are dropped.
+
+- `POST /api/update` with `{"iso3": "SDN", "audience": "donors"|"members", "days": 7}` returns a one-page draft: `{country, mode, audience, window, headline, summary, keyFigures: [{label, text, date, cites}], this_week, needs, response, gaps, sources: [{n, title, source, date, url, kind: "report"|"figure"}]}`. Each section is a list of `{text, cites}`.
+
 Interactive API docs: http://localhost:3001/docs
 
 ## Data
@@ -95,7 +101,33 @@ Interactive API docs: http://localhost:3001/docs
   python scripts/fetch_reports.py          # every country with hasBriefing; or e.g. SDN UKR
   ```
 
+  Each fetch also adds the reports to `data/archive/<iso3>.json`, which keeps every report ever seen (with `first_seen`), so "What's new" has earlier weeks to compare against. Fetch regularly (daily is ideal) to build up history.
+
   It reads ReliefWeb's public RSS feeds (the ReliefWeb API needs an approved appname) and keeps up to 12 English reports per country. It prefers established humanitarian agencies and needs-focused reports (displacement, food, health, access), and skips battle-event data, meeting minutes and admin notices. Each feed only covers the latest ~20 items, so reports span a few days. Report text belongs to the original publishers; we store it only to cite and link back.
+
+## Report archive and "What's new"
+
+`data/archive/<iso3>.json` is the history used by "What's new": every report fetched from ReliefWeb plus any added by hand. "New" means published in the last 7 days. It is compared with reports from the 45 days before that.
+
+To add a report from any site, for example to backfill earlier weeks or cover a source ReliefWeb doesn't carry:
+
+```bash
+python scripts/add_report.py SDN https://news.un.org/en/story/2026/10/1168577
+python scripts/add_report.py SDN <url> --date 2026-10-12 --source "UN News"   # if the date or publisher isn't detected
+```
+
+It prints the detected title, date and opening text so you can check them. Pages without a clear date are refused rather than guessed. Avoid round-up pages that mix several countries (e.g. "World News in Brief"), since everything in an archive file is treated as being about that country.
+
+Bob is told to report only things that happened or were first reported in the 7-day window, to treat restated older figures as background, and never to compare figures that measure different things. Results depend on what the week's reports cover.
+
+## Weekly update (one-page draft)
+
+Who it's for: small NGOs and diaspora organisations that send donors or members a short, sourced update every week, which normally takes hours to put together.
+
+- **Key figures** come straight from the verified profiles (`data/profiles/`), each with its "as of" date. The AI doesn't write them.
+- **Summary, This week, Humanitarian needs, Response and funding** are written by Bob from this week's archived reports plus those figures. Every sentence must cite a source. Uncited sentences are dropped, "This week" items must cite a report from this week, and a headline containing numbers is replaced, since it can't carry a citation.
+- **One page:** at most 3 / 4 / 3 / 2 bullets per section and about 330 AI-written words. Trailing bullets are trimmed if needed. Only cited sources are listed, numbered in reading order with each URL once, as one short line each (publisher, date, shortened title, site) in two columns. The full link is clickable in the PDF and written out in Copy text. Tested: 8 of 8 generated drafts printed on one A4 page.
+- It's a **draft to review**: every text block is editable, and the footer says it was AI-assisted.
 
 ## Country profiles
 
@@ -121,12 +153,14 @@ python -m pytest tests -q
 ```
 main.py                     FastAPI backend: map page, /static files, /api/conflicts, /api/briefing
 briefing.py                 Embedding retrieval, IBM Bob call, citation check, fallback
-data/                       Conflict list, saved reports, country profiles, raw UCDP CSV
+data/                       Conflict list, current reports, report archive, country profiles, raw UCDP CSV
 static/world.html           Frontend: the map (d3 + topojson, Natural Earth 1:50m borders)
 static/conflicts.json       UCDP conflict details shown on the map (generated, see below)
 scripts/build_conflicts.py  Builds static/conflicts.json from the raw UCDP CSV
 scripts/fetch_reports.py    Refreshes data/reports/ from ReliefWeb
 scripts/verify_profiles.py  Checks every profile quote against its source
+scripts/add_report.py       Adds a report from any URL to the archive
+scripts/archive.py          Shared archive helpers (data/archive/<iso3>.json)
 .env.example                Template for .env.local (BOB_API_KEY)
 tests/                      Backend tests
 requirements.txt            Python dependencies

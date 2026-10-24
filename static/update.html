@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weekly Update</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a toolbar on top, then the update as a sheet of paper. The paper stays light in both themes so the screen
+     matches what gets printed or saved as PDF. */
+  :root {
+    --bg: #dde4ea; --ink: #17202a; --muted: #5b6875; --line: #c9d2da; --accent: #c2410c; --war: #d8483a;
+    --panel: #ffffff; --paper: #ffffff; --paper-ink: #17202a; --paper-muted: #5b6875; --paper-line: #d5dce2;
+    --font-ui: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+    --font-data: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f161d; --ink: #e8edf2; --muted: #93a2b0; --line: #33414f; --accent: #fb923c; --panel: #151d26; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f161d; --ink: #e8edf2; --muted: #93a2b0; --line: #33414f; --accent: #fb923c; --panel: #151d26; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-ui); }
+
+  .toolbar {
+    position: sticky; top: 0; z-index: 2;
+    background: var(--panel); border-bottom: 1px solid var(--line);
+    padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+  }
+  .toolbar a.back { color: var(--muted); text-decoration: none; font-size: 0.875rem; }
+  .toolbar a.back:hover { color: var(--ink); }
+  .toolbar h1 { font-size: 1rem; font-weight: 600; margin: 0; }
+  .field { display: flex; align-items: center; gap: 6px; font-size: 0.8125rem; color: var(--muted); }
+  .field select, .field input {
+    font: 0.8125rem var(--font-ui); color: var(--ink); background: transparent;
+    border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px;
+  }
+  .field input { width: 13rem; max-width: 100%; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .seg button { font: 500 0.8125rem var(--font-ui); color: var(--muted); background: transparent; border: 0; padding: 6px 10px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+  .actions { display: flex; gap: 8px; margin-left: auto; }
+  button.btn {
+    font: 500 0.8125rem var(--font-ui); color: var(--ink); background: transparent;
+    border: 1px solid var(--line); border-radius: 4px; padding: 6px 12px; cursor: pointer;
+  }
+  button.btn.primary { border-color: var(--accent); color: var(--accent); }
+  button.btn:hover { border-color: var(--ink); }
+  button.btn:disabled { opacity: 0.45; cursor: default; }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .status { max-width: 820px; margin: 14px auto 0; padding: 0 16px; font-size: 0.8125rem; color: var(--muted); display: grid; gap: 4px; }
+  .status .warn { color: var(--war); }
+
+  .paper {
+    max-width: 820px; margin: 12px auto 40px; background: var(--paper); color: var(--paper-ink);
+    border: 1px solid var(--paper-line); border-radius: 4px; padding: 36px 44px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06); font-size: 0.875rem; line-height: 1.5;
+  }
+  .paper[hidden] { display: none; }
+  .doc-eyebrow { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--paper-muted); margin: 0; }
+  .doc-title { font-size: 1.5rem; line-height: 1.25; font-weight: 600; margin: 4px 0 6px; text-wrap: balance; }
+  .doc-meta { font-size: 0.8125rem; color: var(--paper-muted); margin: 0 0 18px; }
+  .paper h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--paper-muted); margin: 18px 0 6px; font-weight: 600; }
+  .paper p { margin: 0; }
+  .paper ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+  .cite { font: 500 0.625rem var(--font-data); color: #9a3412; vertical-align: super; margin-left: 1px; }
+  .figures { display: grid; grid-template-columns: repeat(var(--cols, 4), 1fr); gap: 10px; border: 1px solid var(--paper-line); border-radius: 4px; padding: 12px; }
+  .figure .label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--paper-muted); display: block; }
+  .figure .text { font-size: 0.8125rem; line-height: 1.4; display: block; margin-top: 2px; }
+  .figure .asof { font-size: 0.6875rem; color: var(--paper-muted); display: block; margin-top: 2px; }
+  /* One short line per source, in two columns: the full URL is in the link (and in Copy text), not printed. */
+  .sources { margin: 0; padding-left: 22px; font-size: 0.6875rem; line-height: 1.35; color: var(--paper-muted); columns: 2; column-gap: 24px; }
+  .sources li { break-inside: avoid; margin-bottom: 2px; }
+  .sources a { color: inherit; text-decoration: none; }
+  .sources a:hover { text-decoration: underline; }
+  .sources .pub { color: var(--paper-ink); }
+  .doc-footer { margin-top: 16px; padding-top: 8px; border-top: 1px solid var(--paper-line); font-size: 0.6875rem; color: var(--paper-muted); }
+  [contenteditable]:hover { background: #fff7ed; }
+  [contenteditable]:focus { outline: 1px dashed #c2410c; outline-offset: 2px; background: transparent; }
+
+  .loading { display: flex; align-items: center; gap: 8px; }
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+
+  @media (max-width: 640px) {
+    .figures { grid-template-columns: repeat(2, 1fr); }
+    .sources { columns: 1; }
+    .paper { padding: 22px 18px; margin: 12px 8px 32px; }
+    .actions { margin-left: 0; }
+    .doc-title { font-size: 1.25rem; }
+  }
+  @page { size: A4; margin: 11mm 12mm; }
+  @media print {
+    body { background: #fff; }
+    .toolbar, .status { display: none; }
+    .paper { border: 0; box-shadow: none; margin: 0; padding: 0; max-width: none; font-size: 8.8pt; line-height: 1.35; }
+    .doc-title { font-size: 15pt; margin: 2px 0 4px; }
+    .doc-meta { margin-bottom: 10px; }
+    .paper h2 { font-size: 7.5pt; margin: 10px 0 4px; }
+    .paper ul { gap: 2px; }
+    .figures { break-inside: avoid; padding: 8px; gap: 8px; }
+    .figure .text { font-size: 8pt; line-height: 1.3; }
+    .figure .label, .figure .asof { font-size: 6.5pt; }
+    .sources { font-size: 6.5pt; line-height: 1.3; column-gap: 14px; }
+    .doc-footer { margin-top: 8px; font-size: 6.5pt; }
+    [contenteditable]:hover { background: none; }
+  }
+</style>
+</head>
+<body>
+<header class="toolbar">
+  <a class="back" href="/">← Map</a>
+  <h1>Weekly update</h1>
+  <label class="field">Country <select id="country"></select></label>
+  <span class="field">For
+    <span class="seg" role="group" aria-label="Audience">
+      <button type="button" data-audience="donors" aria-pressed="true">Donors</button>
+      <button type="button" data-audience="members" aria-pressed="false">Members</button>
+    </span>
+  </span>
+  <label class="field">Organisation <input id="org" type="text" maxlength="80" placeholder="Optional, printed only"></label>
+  <div class="actions">
+    <button class="btn primary" id="generate" type="button">Generate draft</button>
+    <button class="btn" id="copy" type="button" disabled>Copy text</button>
+    <button class="btn" id="print" type="button" disabled>Print / Save PDF</button>
+  </div>
+</header>
+
+<div class="status" id="status" aria-live="polite">
+  <p>A one-page situation update built from this week's reports and verified key figures. Every figure is cited. Generate a draft, then click any text to edit it.</p>
+</div>
+
+<article class="paper" id="paper" hidden></article>
+
+<script>
+const AUDIENCE_TEXT = { donors: "donors and supporters", members: "members" };
+const params = new URLSearchParams(location.search);
+const countryEl = document.getElementById("country");
+const orgEl = document.getElementById("org");
+const statusEl = document.getElementById("status");
+const paperEl = document.getElementById("paper");
+const generateBtn = document.getElementById("generate");
+const copyBtn = document.getElementById("copy");
+const printBtn = document.getElementById("print");
+let audience = params.get("audience") === "members" ? "members" : "donors";
+let request = null;
+
+const el = (tag, props = {}, ...children) => {
+  const node = Object.assign(document.createElement(tag), props);
+  node.append(...children);
+  return node;
+};
+
+function formatDate(iso) {
+  const d = new Date(String(iso).slice(0, 10) + "T00:00:00Z");
+  return isNaN(d) ? iso : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
+function safeUrl(url) {
+  try { const u = new URL(url); return u.protocol === "https:" || u.protocol === "http:" ? u.href : null; } catch { return null; }
+}
+
+try { orgEl.value = localStorage.getItem("atlas-update-org") || ""; } catch {}
+orgEl.addEventListener("input", () => { try { localStorage.setItem("atlas-update-org", orgEl.value); } catch {} });
+
+document.querySelectorAll("[data-audience]").forEach(btn => {
+  btn.setAttribute("aria-pressed", String(btn.dataset.audience === audience));
+  btn.addEventListener("click", () => {
+    audience = btn.dataset.audience;
+    document.querySelectorAll("[data-audience]").forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
+  });
+});
+
+fetch("/api/conflicts")
+  .then(r => r.json())
+  .then(data => {
+    const wanted = (params.get("iso3") || "").toUpperCase();
+    for (const c of data.countries.filter(c => c.hasBriefing)) {
+      countryEl.append(el("option", { value: c.iso3, textContent: c.name, selected: c.iso3 === wanted }));
+    }
+    if (/^[A-Z]{3}$/.test(wanted) && countryEl.value === wanted) generate();
+  })
+  .catch(() => setStatus([el("p", { className: "warn" }, "Couldn't load the country list. Is the server running?")]));
+
+generateBtn.addEventListener("click", generate);
+printBtn.addEventListener("click", () => window.print());
+copyBtn.addEventListener("click", () => {
+  navigator.clipboard.writeText(toPlainText()).then(
+    () => { copyBtn.textContent = "Copied"; setTimeout(() => { copyBtn.textContent = "Copy text"; }, 1500); },
+    () => { copyBtn.textContent = "Copy failed"; });
+});
+
+function setStatus(nodes) {
+  statusEl.innerHTML = "";
+  statusEl.append(...nodes);
+}
+
+function generate() {
+  if (!countryEl.value) return;
+  if (request) request.abort();
+  const ctrl = request = new AbortController();
+  const url = new URL(location.href);
+  url.searchParams.set("iso3", countryEl.value);
+  url.searchParams.set("audience", audience);
+  history.replaceState(null, "", url);
+  generateBtn.disabled = copyBtn.disabled = printBtn.disabled = true;
+  setStatus([el("p", { className: "loading" }, el("span", { className: "spinner" }), "Writing the draft from this week's reports… this usually takes about 10 seconds.")]);
+  fetch("/api/update", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ iso3: countryEl.value, audience }), signal: ctrl.signal,
+  })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(u => { if (request === ctrl) render(u); })
+    .catch(err => {
+      if (err.name !== "AbortError") setStatus([el("p", { className: "warn" }, "The draft couldn't be generated. Check that the server is running and try again.")]);
+    })
+    .finally(() => { if (request === ctrl) generateBtn.disabled = false; });
+}
+
+function shorten(text, max) {
+  return text.length <= max ? text : text.slice(0, text.lastIndexOf(" ", max - 1)).replace(/[,;:\s–—-]+$/, "") + "…";
+}
+
+// "Danish Refugee Council, IMPACT Initiatives, Mercy Corps" -> "Danish Refugee Council et al."; drops "(…)" notes.
+function shortPublisher(name) {
+  const parts = name.replace(/\s*\(.*?\)/g, "").split(", ");
+  return parts.length > 2 ? `${parts[0]} et al.` : parts.join(", ");
+}
+
+function cited(text, cites) {
+  return [text, ...cites.map(n => el("sup", { className: "cite" }, `[${n}]`))];
+}
+
+function render(u) {
+  const notes = [];
+  if (u.mode === "ai") notes.push(el("p", {}, "Draft written by IBM Bob from the sources listed. Check every figure against its source before sending."));
+  if (u.mode === "fallback") notes.push(el("p", { className: "warn" }, "AI drafting is unavailable, so the sections show excerpts from this week's reports. Write the summary yourself."));
+  if (u.mode === "none") notes.push(el("p", { className: "warn" }, u.gaps));
+  if (u.gaps && u.mode !== "none") notes.push(el("p", {}, "Not covered by the sources: " + u.gaps));
+  if ((u.sources || []).some(s => /SAMPLE/.test(s.title + s.source))) notes.push(el("p", { className: "warn" }, "Some sources are placeholder data."));
+  setStatus(notes);
+  if (u.mode === "none") { paperEl.hidden = true; return; }
+
+  const week = u.window ? `${formatDate(u.window.from)} – ${formatDate(u.window.to)}` : "";
+  const org = orgEl.value.trim();
+  const meta = [`Week of ${week}`, org ? `Prepared by ${org} for ${AUDIENCE_TEXT[u.audience]}` : `For ${AUDIENCE_TEXT[u.audience]}`].join(" · ");
+
+  paperEl.innerHTML = "";
+  paperEl.append(
+    el("p", { className: "doc-eyebrow" }, `Situation update · ${u.country}`),
+    el("h1", { className: "doc-title", contentEditable: "true" }, u.headline || `${u.country}: weekly situation update`),
+    el("p", { className: "doc-meta", contentEditable: "true" }, meta));
+
+  if (u.summary.length) paperEl.append(el("p", { contentEditable: "true" }, ...u.summary.flatMap(s => [...cited(s.text, s.cites), " "])));
+
+  if (u.keyFigures.length) {
+    const box = el("div", { className: "figures" });
+    box.style.setProperty("--cols", u.keyFigures.length);  // all key figures on one row
+    for (const f of u.keyFigures) {
+      box.append(el("div", { className: "figure" }, el("span", { className: "label" }, f.label),
+        el("span", { className: "text", contentEditable: "true" }, ...cited(f.text, f.cites)),
+        el("span", { className: "asof" }, `As of ${formatDate(f.date)}`)));
+    }
+    paperEl.append(el("h2", {}, "Key figures"), box);
+  }
+
+  for (const [key, title] of [["this_week", "This week"], ["needs", "Humanitarian needs"], ["response", "Response and funding"]]) {
+    if (!u[key].length) continue;
+    paperEl.append(el("h2", {}, title), el("ul", { contentEditable: "true" }, ...u[key].map(b => el("li", {}, ...cited(b.text, b.cites)))));
+  }
+
+  const list = el("ol", { className: "sources" });
+  for (const s of u.sources) {
+    const url = safeUrl(s.url);
+    const title = s.kind === "figure" ? s.title.split(":")[0] : s.title;
+    const line = [el("span", { className: "pub" }, `${shortPublisher(s.source)}, ${formatDate(s.date)}`),
+      ` · ${shorten(title, 70)}`, url ? ` · ${new URL(url).hostname.replace(/^www\./, "")}` : ""];
+    const li = el("li", { value: s.n }, url ? el("a", { href: url, target: "_blank", rel: "noopener", title: s.title }, ...line) : el("span", {}, ...line));
+    li.dataset.full = `${title} — ${s.source}, ${formatDate(s.date)}${url ? ". " + url : ""}`;  // used by Copy text
+    list.append(li);
+  }
+  paperEl.append(el("h2", {}, "Sources"), list);
+
+  const official = (u.links || []).map(l => ({ ...l, url: safeUrl(l.url) })).filter(l => l.url);
+  paperEl.append(el("p", { className: "doc-footer" },
+    `AI-assisted draft, ${formatDate(u.generatedAt)}, from the sources listed. Check figures before sending; not safety or evacuation advice.`
+    + (official.length ? " Official updates: " + official.map(l => l.url.replace(/^https?:\/\//, "")).join(", ") + "." : "")));
+
+  paperEl.hidden = false;
+  copyBtn.disabled = printBtn.disabled = false;
+}
+
+// Plain text for pasting into an email or newsletter, from the document as edited.
+function toPlainText() {
+  const lines = [];
+  for (const node of paperEl.children) {
+    if (node.classList.contains("figures")) {
+      for (const f of node.children) lines.push(`• ${f.querySelector(".label").innerText}: ${f.querySelector(".text").innerText} (${f.querySelector(".asof").innerText.toLowerCase()})`);
+    } else if (node.tagName === "UL") {
+      for (const li of node.children) lines.push(`• ${li.innerText.trim()}`);
+    } else if (node.tagName === "OL") {
+      for (const li of node.children) lines.push(`[${li.value}] ${li.dataset.full || li.innerText.trim()}`);
+    } else if (node.tagName === "H2") {
+      lines.push("", node.innerText.toUpperCase());
+    } else {
+      lines.push(node.innerText.trim());
+    }
+  }
+  return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim() + "\n";
+}
+</script>
+</body>
+</html>

@@ -117,9 +117,42 @@ def fetch(iso3: str) -> list[dict]:
             "url": (item.findtext("link") or "").strip(),
             "text": truncate(text, MAX_CHARS),
         })
-        if len(reports) == MAX_REPORTS:
-            break
-    return reports
+    return pick(reports)
+
+
+# --- Choosing the best reports, not just the newest --------------------------
+# The app briefs on people's needs, so prefer established humanitarian agencies and
+# reports about displacement, food, health and aid access. Skip pure military updates,
+# meeting minutes and admin notices.
+TRUSTED = ["office for the coordination of humanitarian affairs", "ocha", "unhcr", "world food programme", "wfp",
+           "unicef", "world health organization", "international organization for migration", "iom",
+           "international committee of the red cross", "international federation of red cross", "fao",
+           "un women", "save the children", "médecins sans frontières", "msf", "norwegian refugee council",
+           "danish refugee council", "reach initiative", "amnesty international", "human rights watch", "unfpa"]
+NEED_WORDS = ["displac", "refugee", "idp", "food", "hunger", "famine", "malnutrition", "health", "cholera",
+              "hospital", "civilian", "humanitarian", "access", "water", "shelter", "protection", "funding",
+              "needs", "children", "women", "assistance", "returnee", "evacuat", "energy", "heating"]
+MILITARY_SOURCES = ["armed conflict location", "acled"]   # battle-event data; not a needs briefing
+LOW_VALUE_TITLES = re.compile(r"meeting minutes|guidance on reporting|terms of reference|vacanc|tender|endowment|webinar", re.I)
+
+
+def need_score(text: str) -> int:
+    t = text.lower()
+    return sum(t.count(w) for w in NEED_WORDS)
+
+
+def pick(reports: list[dict]) -> list[dict]:
+    ranked = []
+    for r in reports:
+        src, score = r["source"].lower(), need_score(r["text"])
+        if any(m in src for m in MILITARY_SOURCES) or LOW_VALUE_TITLES.search(r["title"]) or score < 4:
+            print(f"   skip: {r['title'][:80]}")
+            continue
+        trusted = any(t in src for t in TRUSTED)
+        ranked.append((trusted, min(score, 40), r["date"], r))
+    ranked.sort(key=lambda x: (x[0], x[1], x[2]), reverse=True)
+    chosen = [x[3] for x in ranked[:MAX_REPORTS]]
+    return sorted(chosen, key=lambda r: r["date"], reverse=True)
 
 
 def main(codes: list[str]):

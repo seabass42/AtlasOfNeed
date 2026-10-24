@@ -6,6 +6,7 @@
 # Run: python scripts/build_conflicts.py
 import csv
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -28,6 +29,14 @@ GW_TO_ISO = {
 TYPES = {"1": "Extrasystemic", "2": "Interstate", "3": "Intrastate", "4": "Internationalized intrastate"}
 INCOMPATIBILITY = {"1": "Territory", "2": "Government", "3": "Government and territory"}
 
+# UCDP keeps former names in parentheses, e.g. "Russia (Soviet Union)", "Myanmar (Burma)", "DR Congo (Zaire)".
+# They read as wrong on a current map, so drop them for display.
+FORMER_NAME = re.compile(r" \((Soviet Union|Burma|Zaire|Kampuchea|North Yemen)\)")
+
+
+def clean(name):
+    return FORMER_NAME.sub("", name)
+
 
 def main():
     with SOURCE_CSV.open(encoding="utf-8-sig", newline="") as f:
@@ -37,12 +46,13 @@ def main():
     for r in rows:
         conflict = {
             "id": r["conflict_id"],
-            "sides": f"{r['side_a']} vs {r['side_b']}",
+            "sides": f"{clean(r['side_a'])} vs {clean(r['side_b'])}",
             "intensity": int(r["intensity_level"]),
             "type": TYPES[r["type_of_conflict"]],
             "incompatibility": INCOMPATIBILITY[r["incompatibility"]],
-            "territory": r["territory_name"] or None,
-            "location": r["location"],
+            # Territory names in interstate conflicts (e.g. "Crimea", "Kashmir") are disputed claims; don't show them.
+            "territory": (r["territory_name"] or None) if r["type_of_conflict"] != "2" else None,
+            "location": clean(r["location"]),
         }
         for gw in (code.strip() for code in r["gwno_loc"].split(",")):
             if gw not in GW_TO_ISO:

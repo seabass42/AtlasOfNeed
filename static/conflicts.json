@@ -17,7 +17,7 @@
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Durand line",
+     "territory": null,
      "location": "Afghanistan, Pakistan"
     },
     {
@@ -59,48 +59,48 @@
    "conflicts": [
     {
      "id": "222",
-     "sides": "Government of Myanmar (Burma) vs NUG, PSLF",
+     "sides": "Government of Myanmar vs NUG, PSLF",
      "intensity": 2,
      "type": "Intrastate",
      "incompatibility": "Government",
      "territory": null,
-     "location": "Myanmar (Burma)"
+     "location": "Myanmar"
     },
     {
      "id": "231",
-     "sides": "Government of Myanmar (Burma) vs KIO",
+     "sides": "Government of Myanmar vs KIO",
      "intensity": 1,
      "type": "Intrastate",
      "incompatibility": "Territory",
      "territory": "Kachin",
-     "location": "Myanmar (Burma)"
+     "location": "Myanmar"
     },
     {
      "id": "253",
-     "sides": "Government of Myanmar (Burma) vs KNPP",
+     "sides": "Government of Myanmar vs KNPP",
      "intensity": 1,
      "type": "Intrastate",
      "incompatibility": "Territory",
      "territory": "Karenni",
-     "location": "Myanmar (Burma)"
+     "location": "Myanmar"
     },
     {
      "id": "221",
-     "sides": "Government of Myanmar (Burma) vs KNU",
+     "sides": "Government of Myanmar vs KNU",
      "intensity": 1,
      "type": "Intrastate",
      "incompatibility": "Territory",
      "territory": "Karen",
-     "location": "Myanmar (Burma)"
+     "location": "Myanmar"
     },
     {
      "id": "223",
-     "sides": "Government of Myanmar (Burma) vs ULA",
+     "sides": "Government of Myanmar vs ULA",
      "intensity": 1,
      "type": "Intrastate",
      "incompatibility": "Territory",
      "territory": "Arakan",
-     "location": "Myanmar (Burma)"
+     "location": "Myanmar"
     }
    ]
   },
@@ -109,12 +109,12 @@
    "conflicts": [
     {
      "id": "294",
-     "sides": "Government of Cambodia (Kampuchea) vs Government of Thailand",
+     "sides": "Government of Cambodia vs Government of Thailand",
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Common Border",
-     "location": "Cambodia (Kampuchea), Thailand"
+     "territory": null,
+     "location": "Cambodia, Thailand"
     }
    ]
   },
@@ -183,21 +183,21 @@
    "conflicts": [
     {
      "id": "283",
-     "sides": "Government of DR Congo (Zaire) vs AFC, CRP",
+     "sides": "Government of DR Congo vs AFC, CRP",
      "intensity": 2,
      "type": "Internationalized intrastate",
      "incompatibility": "Government",
      "territory": null,
-     "location": "DR Congo (Zaire)"
+     "location": "DR Congo"
     },
     {
      "id": "14692",
-     "sides": "Government of DR Congo (Zaire) vs IS",
+     "sides": "Government of DR Congo vs IS",
      "intensity": 1,
      "type": "Internationalized intrastate",
      "incompatibility": "Territory",
      "territory": "Islamic State",
-     "location": "DR Congo (Zaire)"
+     "location": "DR Congo"
     }
    ]
   },
@@ -270,7 +270,7 @@
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Kashmir",
+     "territory": null,
      "location": "India, Pakistan"
     },
     {
@@ -371,17 +371,17 @@
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Golan Heights",
+     "territory": null,
      "location": "Israel, Syria"
     },
     {
      "id": "16470",
-     "sides": "Government of Israel vs Government of Yemen (North Yemen)",
+     "sides": "Government of Israel vs Government of Yemen",
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Government",
      "territory": null,
-     "location": "Israel, Yemen (North Yemen)"
+     "location": "Israel, Yemen"
     },
     {
      "id": "426",
@@ -536,7 +536,7 @@
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Durand line",
+     "territory": null,
      "location": "Afghanistan, Pakistan"
     },
     {
@@ -545,7 +545,7 @@
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Kashmir",
+     "territory": null,
      "location": "India, Pakistan"
     },
     {
@@ -587,12 +587,12 @@
    "conflicts": [
     {
      "id": "13243",
-     "sides": "Government of Russia (Soviet Union) vs Government of Ukraine",
+     "sides": "Government of Russia vs Government of Ukraine",
      "intensity": 2,
      "type": "Interstate",
      "incompatibility": "Government and territory",
-     "territory": "Crimea",
-     "location": "Russia (Soviet Union), Ukraine"
+     "territory": null,
+     "location": "Russia, Ukraine"
     }
    ]
   },
@@ -670,7 +670,7 @@
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Golan Heights",
+     "territory": null,
      "location": "Israel, Syria"
     },
     {
@@ -707,12 +707,12 @@
    "conflicts": [
     {
      "id": "294",
-     "sides": "Government of Cambodia (Kampuchea) vs Government of Thailand",
+     "sides": "Government of Cambodia vs Government of Thailand",
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Common Border",
-     "location": "Cambodia (Kampuchea), Thailand"
+     "territory": null,
+     "location": "Cambodia, Thailand"
     },
     {
      "id": "423",
@@ -758,12 +758,12 @@
    "conflicts": [
     {
      "id": "13243",
-     "sides": "Government of Russia (Soviet Union) vs Government of Ukraine",
+     "sides": "Government of Russia vs Government of Ukraine",
      "intensity": 2,
      "type": "Interstate",
      "incompatibility": "Government and territory",
-     "territory": "Crimea",
-     "location": "Russia (Soviet Union), Ukraine"
+     "territory": null,
+     "location": "Russia, Ukraine"
     }
    ]
   },
@@ -772,12 +772,12 @@
    "conflicts": [
     {
      "id": "16099",
-     "sides": "Government of United Kingdom, Government of United States of America vs Government of Yemen (North Yemen)",
+     "sides": "Government of United Kingdom, Government of United States of America vs Government of Yemen",
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Red Sea, Bab al Mandab and Gulf of Aden",
-     "location": "United Kingdom, United States of America, Yemen (North Yemen)"
+     "territory": null,
+     "location": "United Kingdom, United States of America, Yemen"
     }
    ]
   },
@@ -786,12 +786,12 @@
    "conflicts": [
     {
      "id": "16099",
-     "sides": "Government of United Kingdom, Government of United States of America vs Government of Yemen (North Yemen)",
+     "sides": "Government of United Kingdom, Government of United States of America vs Government of Yemen",
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Red Sea, Bab al Mandab and Gulf of Aden",
-     "location": "United Kingdom, United States of America, Yemen (North Yemen)"
+     "territory": null,
+     "location": "United Kingdom, United States of America, Yemen"
     }
    ]
   },
@@ -823,39 +823,39 @@
    "conflicts": [
     {
      "id": "16470",
-     "sides": "Government of Israel vs Government of Yemen (North Yemen)",
+     "sides": "Government of Israel vs Government of Yemen",
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Government",
      "territory": null,
-     "location": "Israel, Yemen (North Yemen)"
+     "location": "Israel, Yemen"
     },
     {
      "id": "16099",
-     "sides": "Government of United Kingdom, Government of United States of America vs Government of Yemen (North Yemen)",
+     "sides": "Government of United Kingdom, Government of United States of America vs Government of Yemen",
      "intensity": 1,
      "type": "Interstate",
      "incompatibility": "Territory",
-     "territory": "Red Sea, Bab al Mandab and Gulf of Aden",
-     "location": "United Kingdom, United States of America, Yemen (North Yemen)"
+     "territory": null,
+     "location": "United Kingdom, United States of America, Yemen"
     },
     {
      "id": "230",
-     "sides": "Government of Yemen (North Yemen) vs Forces of the Presidential Leadership Council",
+     "sides": "Government of Yemen vs Forces of the Presidential Leadership Council",
      "intensity": 1,
      "type": "Internationalized intrastate",
      "incompatibility": "Government",
      "territory": null,
-     "location": "Yemen (North Yemen)"
+     "location": "Yemen"
     },
     {
      "id": "402",
-     "sides": "Government of Yemen (North Yemen) vs STC",
+     "sides": "Government of Yemen vs STC",
      "intensity": 1,
      "type": "Intrastate",
      "incompatibility": "Territory",
      "territory": "South Yemen",
-     "location": "Yemen (North Yemen)"
+     "location": "Yemen"
     }
    ]
   }

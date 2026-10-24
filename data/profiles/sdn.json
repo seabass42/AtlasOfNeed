@@ -1,65 +1,177 @@
 {
   "iso3": "SDN",
   "name": "Sudan",
-  "updated": "2025-01",
-  "current_situation": {
-    "summary": "Sudan is experiencing one of the world's worst humanitarian crises, triggered by open war between the Sudanese Armed Forces (SAF) and the Rapid Support Forces (RSF) that broke out on 15 April 2023. The conflict has spread from Khartoum across Darfur, Kordofan, and other regions. Both sides have been credibly accused of massacres, sexual violence, and deliberate obstruction of aid. The RSF seized most of Khartoum by mid-2023; fighting for the capital continued into 2025.",
-    "source": "OCHA Sudan",
-    "date": "2025-01",
-    "url": "https://reliefweb.int/country/sdn"
-  },
-  "people_in_need": {
-    "figure": "Approximately 30.4 million people in humanitarian need as of late 2024 — the largest humanitarian crisis in the world by number of people in need.",
-    "source": "OCHA Sudan Humanitarian Needs Overview 2025",
-    "date": "2024-11",
-    "url": "https://reliefweb.int/report/sudan/sudan-humanitarian-needs-overview-2025"
-  },
-  "affected_locations": {
-    "summary": "Khartoum state (site of sustained urban warfare), North Darfur (El Fasher under siege), South Darfur, West Darfur, North Kordofan, Gezira state, Sennar, Blue Nile, and Kassala are all affected by conflict or mass displacement. El Fasher is the last major city in Darfur not under RSF control and has been under siege since 2024.",
-    "source": "OCHA Sudan",
-    "date": "2025-01",
-    "url": "https://reliefweb.int/country/sdn"
-  },
-  "displacement": {
-    "summary": "Over 11 million people internally displaced — the largest IDP crisis in the world as of early 2025. Over 2.1 million Sudanese have fled to Chad, Egypt, South Sudan, Ethiopia, and CAR. Total displacement surpasses 13 million people.",
-    "source": "UNHCR Sudan",
-    "date": "2025-01",
-    "url": "https://www.unhcr.org/countries/sudan"
-  },
-  "food_security": {
-    "summary": "Over 25 million people — more than half the population — face acute food insecurity (IPC Phase 3+) as of mid-2024. Famine (IPC Phase 5) was confirmed in Zamzam camp, North Darfur, in August 2024, the first famine confirmed anywhere in the world since 2017. Emergency (Phase 4) conditions were found in six additional areas.",
-    "source": "IPC Sudan Famine Review August 2024",
-    "date": "2024-08",
-    "url": "https://www.ipcinfo.org/ipc-country-analysis/details-map/en/c/1157530/"
-  },
-  "health": {
-    "summary": "Over 70-80% of health facilities in conflict-affected areas are non-functional, damaged, or occupied by armed forces. A catastrophic cholera outbreak (330,000+ cases, 4,700+ deaths) was ongoing as of end 2024. Dengue, malaria, and measles outbreaks compound an already collapsed health system. Sudan's three main referral hospitals in Khartoum were taken over and destroyed.",
-    "source": "WHO Sudan Health Emergency",
-    "date": "2024-12",
-    "url": "https://www.who.int/countries/sdn/"
-  },
-  "water_sanitation": {
-    "summary": "Water infrastructure in Khartoum and other major cities has been destroyed or is non-functional due to fighting, power cuts, and looting. Approximately 14 million people lack access to safe water. Open defecation in displacement sites contributes to cholera and other waterborne disease outbreaks.",
-    "source": "UNICEF Sudan",
-    "date": "2024-12",
-    "url": "https://www.unicef.org/sudan/"
-  },
-  "shelter": {
-    "summary": "Over 11 million IDPs are living in schools, mosques, public buildings, host communities, and open spaces across Sudan. Khartoum, once a city of 8 million, has been largely emptied; residential neighbourhoods have been destroyed or looted. Displacement camps in Darfur and border areas are severely overcrowded.",
-    "source": "IOM Sudan Displacement Tracking Matrix",
-    "date": "2024-12",
-    "url": "https://dtm.iom.int/sudan"
-  },
-  "children_education": {
-    "summary": "Approximately 19 million children are out of school — the highest number in the world. Schools across conflict-affected states are damaged, occupied, or closed. Recruitment of children by armed groups (particularly the RSF) has been documented. Grave violations against children are reported by the UN Monitoring and Reporting Mechanism.",
-    "source": "UNICEF Sudan",
-    "date": "2024-12",
-    "url": "https://www.unicef.org/sudan/"
-  },
-  "humanitarian_response": {
-    "summary": "The 2024 Sudan HRP requested USD 2.7 billion; funding reached approximately 37% by year-end. Both SAF and RSF systematically obstruct humanitarian convoys. Access to Darfur is critically constrained. The Adre border crossing from Chad to North Darfur is the primary lifeline for millions in besieged areas. Aid workers have been killed and detained. The crisis is widely described as the world's most neglected emergency.",
-    "source": "OCHA Financial Tracking Service — Sudan",
-    "date": "2024-12",
-    "url": "https://fts.unocha.org/countries/212/summary/2024"
-  }
+  "updated": "2026-10-24",
+  "note": "Every fact is paraphrased from the quoted sentence of the linked source, and dated with that source's publication date. Run python scripts/verify_profiles.py to check each quote against its source.",
+  "sections": [
+    {
+      "key": "current_situation",
+      "title": "Current situation",
+      "facts": [
+        {
+          "text": "War between the Sudanese Armed Forces (SAF) and the paramilitary Rapid Support Forces (RSF) began in April 2023 and has spread from Khartoum to Darfur, Kordofan and other regions.",
+          "quote": "The conflict erupted in April 2023 following a power struggle between the Sudanese Armed Forces (SAF) and the paramilitary Rapid Support Forces (RSF), plunging the country into a civil war that has spread from the capital Khartoum to Darfur, Kordofan and other regions.",
+          "source": "UN News",
+          "date": "2026-01-10",
+          "url": "https://news.un.org/en/story/2026/01/1166738"
+        },
+        {
+          "text": "El Fasher, the last SAF stronghold in Darfur, fell to the RSF in October 2025 after an 18-month siege.",
+          "quote": "El Fasher, the last SAF stronghold in Darfur, fell to the Rapid Support Forces (RSF) in October 2025 after an 18-months siege.",
+          "source": "European Union Agency for Asylum",
+          "date": "2026-10-21",
+          "url": "https://reliefweb.int/report/sudan/sudan-humanitarian-crisis-continues-amid-widespread-violence"
+        }
+      ]
+    },
+    {
+      "key": "people_in_need",
+      "title": "People in need",
+      "facts": [
+        {
+          "text": "About 33.7 million people, around two thirds of the population, are expected to need humanitarian assistance in 2026.",
+          "quote": "An estimated 33.7 million people – around two thirds of the population – are expected to need humanitarian assistance in 2026.",
+          "source": "UN News",
+          "date": "2026-01-10",
+          "url": "https://news.un.org/en/story/2026/01/1166738"
+        }
+      ]
+    },
+    {
+      "key": "affected_locations",
+      "title": "Affected areas",
+      "facts": [
+        {
+          "text": "In North Kordofan, El Obeid has faced siege-like conditions for months, with both sides increasingly using drones.",
+          "quote": "In North Kordofan, El Obeid faced siege-like conditions for months, amid increasing use of drones by both parties.",
+          "source": "European Union Agency for Asylum",
+          "date": "2026-10-21",
+          "url": "https://reliefweb.int/report/sudan/sudan-humanitarian-crisis-continues-amid-widespread-violence"
+        },
+        {
+          "text": "In mid-October 2026, at least 12 children were reportedly killed in two attacks in West Kordofan and Khartoum states.",
+          "quote": "At least 12 children, some as young as two, were reportedly killed in two separate incidents in Sudan's West Kordofan and Khartoum states in recent days.",
+          "source": "UNICEF",
+          "date": "2026-10-20",
+          "url": "https://reliefweb.int/report/sudan/least-12-children-reportedly-killed-separate-incidents-west-kordofan-and-khartoum-sudan-enar"
+        }
+      ]
+    },
+    {
+      "key": "displacement",
+      "title": "Displacement",
+      "facts": [
+        {
+          "text": "Close to nine million people were displaced inside Sudan at the end of March 2026.",
+          "quote": "Conflict-driven displacement remains at extremely high levels, with close to nine million people uprooted within Sudan as of the end of March 2026.",
+          "source": "FAO, WFP and UNICEF (joint release on the IPC analysis)",
+          "date": "2026-05-15",
+          "url": "https://www.unicef.org/press-releases/risk-famine-persists-nearly-195-million-people-face-acute-food-insecurity-sudan"
+        },
+        {
+          "text": "Thousands of women are returning to Khartoum after years of displacement inside Sudan and in neighbouring countries.",
+          "quote": "Back in Khartoum, thousands of women are also returning after years of displacement across Sudan and in neighbouring countries.",
+          "source": "UN Women",
+          "date": "2026-10-23",
+          "url": "https://reliefweb.int/report/sudan/i-feel-i-am-warrior-sudanese-women-fight-peace-front-lines-war"
+        }
+      ]
+    },
+    {
+      "key": "food_security",
+      "title": "Food security",
+      "facts": [
+        {
+          "text": "In October 2026 the IPC warned of a growing risk of famine in parts of Greater Darfur and Greater Kordofan, driven by conflict, mass displacement, severe drought and too little funding.",
+          "quote": "The IPC is warning of a growing risk of famine across parts of Greater Darfur and Greater Kordofan, where conflict, mass displacement, severe drought and inadequate humanitarian funding are driving a rapidly deteriorating situation.",
+          "source": "World Health Organization",
+          "date": "2026-10-12",
+          "url": "https://www.who.int/news/item/12-10-2026-ipc-sudan-food-insecurity-and-malnutrition-alert"
+        },
+        {
+          "text": "The latest full IPC analysis found nearly 19.5 million people, two in five, facing crisis levels of acute food insecurity (IPC Phase 3 or above).",
+          "quote": "nearly 19.5 million people – two out of every five people in Sudan - are currently facing crisis levels of acute food insecurity (IPC Phase 3 or above) across Sudan, according to the latest Integrated Food Security Phase Classification (IPC) analysis.",
+          "source": "FAO, WFP and UNICEF (joint release on the IPC analysis)",
+          "date": "2026-05-15",
+          "url": "https://www.unicef.org/press-releases/risk-famine-persists-nearly-195-million-people-face-acute-food-insecurity-sudan"
+        },
+        {
+          "text": "An estimated 825,000 children under five are expected to suffer severe acute malnutrition in 2026.",
+          "quote": "An estimated 825,000 children under five are expected to suffer from Severe Acute Malnutrition (SAM) in 2026",
+          "source": "FAO, WFP and UNICEF (joint release on the IPC analysis)",
+          "date": "2026-05-15",
+          "url": "https://www.unicef.org/press-releases/risk-famine-persists-nearly-195-million-people-face-acute-food-insecurity-sudan"
+        }
+      ]
+    },
+    {
+      "key": "health",
+      "title": "Health",
+      "facts": [
+        {
+          "text": "By 2026, 37% of Sudan's health facilities had stopped functioning.",
+          "quote": "By 2026, 37% of the country’s health facilities had stopped functioning.",
+          "source": "World Health Organization",
+          "date": "2026-10-12",
+          "url": "https://www.who.int/news/item/12-10-2026-ipc-sudan-food-insecurity-and-malnutrition-alert"
+        },
+        {
+          "text": "Since April 2023, WHO has verified 228 attacks on health care, causing 2,055 deaths and 817 injuries.",
+          "quote": "Since 15 April 2023, WHO has verified 228 attacks on health care that have led to 2055 deaths and 817 injuries.",
+          "source": "World Health Organization",
+          "date": "2026-10-12",
+          "url": "https://www.who.int/news/item/12-10-2026-ipc-sudan-food-insecurity-and-malnutrition-alert"
+        }
+      ]
+    },
+    {
+      "key": "water_sanitation",
+      "title": "Water and sanitation",
+      "facts": [
+        {
+          "text": "An estimated 17 million people lack safe drinking water and 24 million lack adequate sanitation.",
+          "quote": "an estimated 17 million people lack access to safe drinking water, and 24 million people lack access to adequate sanitation.",
+          "source": "FAO, WFP and UNICEF (joint release on the IPC analysis)",
+          "date": "2026-05-15",
+          "url": "https://www.unicef.org/press-releases/risk-famine-persists-nearly-195-million-people-face-acute-food-insecurity-sudan"
+        }
+      ]
+    },
+    {
+      "key": "children_education",
+      "title": "Children and education",
+      "facts": [
+        {
+          "text": "In Darfur, nearly three quarters of schools have been damaged, destroyed or made non-functional since April 2023.",
+          "quote": "In battle-scarred Darfur alone, nearly three quarters of schools have been damaged, destroyed or otherwise rendered non-functional since fighting erupted in April 2023.",
+          "source": "UN News",
+          "date": "2026-08-07",
+          "url": "https://news.un.org/en/story/2026/08/1168101"
+        },
+        {
+          "text": "Since 2024 the UN has verified more than 67 attacks on schools, and over 154 cases of military use of schools have been reported.",
+          "quote": "since 2024, the UN has verified more than 67 attacks on schools across Sudan, while over 154 instances of military use of schools have been reported, though the true scale is undoubtedly greater.",
+          "source": "UN News",
+          "date": "2026-08-07",
+          "url": "https://news.un.org/en/story/2026/08/1168101"
+        }
+      ]
+    },
+    {
+      "key": "humanitarian_response",
+      "title": "Humanitarian response",
+      "facts": [
+        {
+          "text": "The 2026 humanitarian response plan has been cut to a “basic survival package” and was only 41% funded by September 2026.",
+          "quote": "Yet the humanitarian response plan has been cut to a “basic survival package.” By September 2026, the plan was only 41 percent funded.",
+          "source": "Refugees International",
+          "date": "2026-10-22",
+          "url": "https://www.refugeesinternational.org/reports-briefs/the-sudan-humanitarian-fund-a-pooled-fund-in-transition/"
+        }
+      ]
+    }
+  ],
+  "not_covered": [
+    "Shelter: no 2026 source with figures was found."
+  ]
 }

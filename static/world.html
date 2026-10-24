@@ -295,31 +295,39 @@ const countryPaths = g.selectAll("path.country")
 countryPaths.append("title").text(d => d.properties.name);
 
 // For the MVP only the countries we have briefings for are highlighted: Ukraine (804) and Sudan (729).
-// Both are classified as war by UCDP, and the conflict details shown come from that dataset (see scripts/build_conflicts.py).
+// Both are classified as war by UCDP, and the conflict details shown come from UCDP data (see scripts/build_conflicts.py):
+// preliminary events for the current year ("current") when available, otherwise the final data for the last full year.
 const FOCUS = new Set(["804", "729"]);
 const INTENSITY_LABEL = { 1: "Minor conflict", 2: "War" };
 const conflictFor = (d) => (conflictData && FOCUS.has(d.id) && conflictData.countries[d.id]) || null;
+const levelOf = (c) => (c.current || c).intensity;
+const sourceLink = (src, text) => Object.assign(document.createElement("a"), { href: src.url, target: "_blank", rel: "noopener", textContent: text });
 
 fetch("/static/conflicts.json")
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(data => {
     conflictData = data;
-    const src = data.source;
+    const src = data.source, cur = data.current_source;
     const sourceEl = document.getElementById("legend-source");
     sourceEl.innerHTML = "";
-    sourceEl.append(`These are classified as war because they had 1,000+ battle-related deaths in ${src.year}, according to the `);
-    const link = Object.assign(document.createElement("a"), { href: src.url, target: "_blank", rel: "noopener", textContent: `${src.name} v${src.version}` });
-    sourceEl.append(link, ".");
+    if (cur) {
+      sourceEl.append(`These are classified as war because they had 1,000+ battle-related deaths in ${cur.through.slice(0, 4)} `
+        + `(1 Jan – ${formatDate(cur.through)}, preliminary `, sourceLink(cur, "UCDP candidate data"),
+        `) and in ${src.year} (`, sourceLink(src, `${src.name} v${src.version}`), ").");
+    } else {
+      sourceEl.append(`These are classified as war because they had 1,000+ battle-related deaths in ${src.year}, according to the `,
+        sourceLink(src, `${src.name} v${src.version}`), ".");
+    }
     countryPaths
-      .classed("conflict-minor", d => conflictFor(d)?.intensity === 1)
-      .classed("conflict-war", d => conflictFor(d)?.intensity === 2)
+      .classed("conflict-minor", d => { const c = conflictFor(d); return !!c && levelOf(c) === 1; })
+      .classed("conflict-war", d => { const c = conflictFor(d); return !!c && levelOf(c) === 2; })
       .attr("aria-label", d => {
         const c = conflictFor(d);
-        return c ? `${d.properties.name}, ${INTENSITY_LABEL[c.intensity].toLowerCase()}` : d.properties.name;
+        return c ? `${d.properties.name}, ${INTENSITY_LABEL[levelOf(c)].toLowerCase()}` : d.properties.name;
       });
     countryPaths.select("title").text(d => {
       const c = conflictFor(d);
-      return c ? `${d.properties.name} · ${INTENSITY_LABEL[c.intensity]}` : d.properties.name;
+      return c ? `${d.properties.name} · ${INTENSITY_LABEL[levelOf(c)]}` : d.properties.name;
     });
     if (active) renderConflictInfo(active.datum);
   })
@@ -403,10 +411,13 @@ function loadBriefing(meta, question) {
 function renderBriefing(meta, b, question) {
   briefingBadgesEl.innerHTML = "";
   briefingBodyEl.innerHTML = "";
-  const sources = b.sources || [];
+  // answered === false: the question isn't covered by the reports (no matching passages, or the AI said so).
+  const answered = b.answered !== false;
+  const sources = answered ? (b.sources || []) : [];
   if (b.mode === "ai") briefingBadgesEl.append(el("span", { className: "badge ai" }, "AI summary · IBM Bob"));
   else if (b.mode === "fallback") briefingBadgesEl.append(el("span", { className: "badge" }, "Source excerpts · AI unavailable"));
-  if (b.newestSource) briefingBadgesEl.append(el("span", { className: "badge" }, "Newest source " + formatDate(b.newestSource)));
+  else if (b.mode === "no_match") briefingBadgesEl.append(el("span", { className: "badge" }, "No matching sources"));
+  if (answered && b.newestSource) briefingBadgesEl.append(el("span", { className: "badge" }, "Newest source " + formatDate(b.newestSource)));
   if (sources.some(s => /SAMPLE/.test(s.title + s.source))) briefingBadgesEl.append(el("span", { className: "badge warn" }, "Placeholder data"));
 
   const sourceId = (n) => `src-${meta.iso3}-${n}`;
@@ -422,7 +433,14 @@ function renderBriefing(meta, b, question) {
     }
     briefingBodyEl.append(el("section", {}, el("h3", {}, question ? `On: “${question}”` : "Current situation"), list));
   }
-  if (b.gaps) briefingBodyEl.append(el("section", {}, el("h3", {}, "What the sources don't cover"), el("p", { className: "gaps" }, b.gaps)));
+  if (!answered && b.mode !== "none") {
+    briefingBodyEl.append(el("section", {},
+      el("h3", {}, question ? `On: “${question}”` : "Current situation"),
+      el("p", { className: "status" }, "The saved reports don't answer this."),
+      el("p", { className: "gaps" }, b.gaps || "")));
+  } else if (b.gaps) {
+    briefingBodyEl.append(el("section", {}, el("h3", {}, "What the sources don't cover"), el("p", { className: "gaps" }, b.gaps)));
+  }
 
   if (b.mode !== "none") {
     const form = el("form", { className: "ask" });
@@ -463,25 +481,25 @@ function renderConflictInfo(d) {
   conflictInfoEl.innerHTML = "";
   const c = conflictFor(d);
   if (!c) { conflictInfoEl.hidden = true; return; }
-  const status = document.createElement("p");
-  status.className = "status";
-  const swatch = document.createElement("span");
-  swatch.className = "swatch " + (c.intensity === 2 ? "war" : "minor");
-  const n = c.conflicts.length;
-  status.append(swatch, `${INTENSITY_LABEL[c.intensity]} · ${n} active conflict${n > 1 ? "s" : ""} in ${conflictData.source.year}`);
+  const cur = c.current, curSrc = conflictData.current_source;
+  const shown = cur || c;
+  const year = cur ? curSrc.through.slice(0, 4) : conflictData.source.year;
+  const n = shown.conflicts.length;
+  const status = el("p", { className: "status" }, el("span", { className: "swatch " + (shown.intensity === 2 ? "war" : "minor") }),
+    `${INTENSITY_LABEL[shown.intensity]} · ${n} active conflict${n > 1 ? "s" : ""} in ${year}`);
 
-  const list = document.createElement("ul");
-  list.className = "conflict-list";
-  for (const k of c.conflicts) {
-    const li = document.createElement("li");
-    if (k.intensity === 2) li.className = "war";
-    const meta = document.createElement("span");
-    meta.className = "conflict-meta";
-    meta.textContent = [INTENSITY_LABEL[k.intensity], k.type, k.territory].filter(Boolean).join(" · ");
-    li.append(k.sides, meta);
-    list.append(li);
+  const list = el("ul", { className: "conflict-list" });
+  for (const k of shown.conflicts) {
+    const meta = cur
+      ? `≈${k.deaths.toLocaleString("en-US")} battle-related deaths, 1 Jan – ${formatDate(curSrc.through)}`
+      : [INTENSITY_LABEL[k.intensity], k.type, k.territory].filter(Boolean).join(" · ");
+    list.append(el("li", { className: k.intensity === 2 ? "war" : "" }, k.sides, el("span", { className: "conflict-meta" }, meta)));
   }
   conflictInfoEl.append(status, list);
+  if (cur) {
+    conflictInfoEl.append(el("p", { className: "note" },
+      `Preliminary UCDP data, updated monthly. Final ${conflictData.source.year} data: ${INTENSITY_LABEL[c.intensity].toLowerCase()}.`));
+  }
   conflictInfoEl.hidden = false;
 }
 

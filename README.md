@@ -73,12 +73,16 @@ Click Ukraine or Sudan: the badge should read **"AI summary · IBM Bob"**. A bri
 | `A license agreement is required` | Do step 2. |
 | `Invalid or expired API key` | Make a new Inference key (step 3). Also check your terminal doesn't have an old key exported: a `BOB_API_KEY` set in the shell **overrides** `.env.local`. Run `unset BOB_API_KEY` (or open a new terminal), then restart. |
 
+**How retrieval works (the "R" in RAG):** the reports are split into passages and embedded with a small local model (`BAAI/bge-small-en-v1.5` via fastembed, about 67 MB, downloaded into `.cache/` on first run). A question is embedded the same way, and the passages with the closest meaning are picked, so "is anyone starving?" finds passages about famine and food insecurity without sharing a word. If even the best passage scores below `MIN_SIMILARITY` (0.62), the question is answered with "the reports don't cover this" and Bob isn't called. The server embeds the reports at startup and caches the vectors in `.cache/embeddings/`. If the model can't be loaded (fastembed not installed, or offline on the very first run), it falls back to keyword matching.
+
 **How Bob is used:** `briefing.py` runs `bob run` in an empty temporary folder with every tool group, MCP and subagents disabled. Bob can only summarize the numbered passages in the prompt, and any bullet without a valid citation is dropped.
 
 ## API (for the frontend)
 
+- `GET /api/profile/{iso3}` returns a country's key figures: `{iso3, name, updated, note, sections: [{key, title, facts: [{text, quote, source, date, url}]}], not_covered}`. `quote` is the exact sentence from the source that `text` paraphrases. 404 if there's no profile.
 - `GET /api/conflicts` returns `{dataset, datasetUrl, basemapNote, countries: [{iso3, name, mapId, hasBriefing, verified, officialLinks}]}`. `mapId` matches the country `id` in the d3 map (Sudan = "729").
-- `POST /api/briefing` with `{"iso3": "SDN", "question": "optional"}` returns `{country, mode: "ai"|"fallback"|"none", bullets: [{text, cites: [1,2]}], gaps, newestSource, sources: [{n, title, source, date, url}], links}`. Each number in `cites` matches a `sources[].n`.
+- `POST /api/briefing` with `{"iso3": "SDN", "question": "optional"}` returns `{country, mode: "ai"|"fallback"|"no_match"|"none", answered, bullets: [{text, cites: [1,2]}], gaps, newestSource, sources: [{n, title, source, date, url}], links}`. Each number in `cites` matches a `sources[].n`.
+  - `answered: false` means the reports don't cover the question. Either no passage is similar enough (`mode: "no_match"`, Bob isn't called, e.g. "what is 1+1"), or Bob read the passages and said they don't answer it (`mode: "ai"`, empty `bullets`). `gaps` explains which. General questions like "what's happening in Sudan?" get the normal briefing.
 
 Interactive API docs: http://localhost:3001/docs
 
@@ -93,6 +97,18 @@ Interactive API docs: http://localhost:3001/docs
 
   It reads ReliefWeb's public RSS feeds (the ReliefWeb API needs an approved appname) and keeps up to 12 English reports per country. It prefers established humanitarian agencies and needs-focused reports (displacement, food, health, access), and skips battle-event data, meeting minutes and admin notices. Each feed only covers the latest ~20 items, so reports span a few days. Report text belongs to the original publishers; we store it only to cite and link back.
 
+## Country profiles
+
+`data/profiles/<iso3>.json` holds hand-picked key figures for Sudan and Ukraine (people in need, displacement, food, health, education, funding...). Each fact links to a specific report from an established source (UN agencies, IPC, OHCHR, IRC, Refugees International...), is dated with that report's publication date, and carries the exact sentence it is based on. Anything we couldn't source for 2026 is listed under `not_covered` instead of being filled in.
+
+Check every quote against its source before a demo, or after editing a profile:
+
+```bash
+python scripts/verify_profiles.py      # exit code 1 if any quote isn't found in its source
+```
+
+It downloads each source and looks for the quote. ReliefWeb blocks scripts, so ReliefWeb quotes are checked against our saved copy in `data/reports/`. If those reports have since been refreshed, they show as "UNREACHABLE: check by hand". It also flags facts older than a year.
+
 ## Tests
 
 ```bash
@@ -104,12 +120,13 @@ python -m pytest tests -q
 
 ```
 main.py                     FastAPI backend: map page, /static files, /api/conflicts, /api/briefing
-briefing.py                 Retrieval, IBM Bob call, citation check, fallback
-data/                       Conflict list, saved reports, raw UCDP CSV
+briefing.py                 Embedding retrieval, IBM Bob call, citation check, fallback
+data/                       Conflict list, saved reports, country profiles, raw UCDP CSV
 static/world.html           Frontend: the map (d3 + topojson, Natural Earth 1:50m borders)
 static/conflicts.json       UCDP conflict details shown on the map (generated, see below)
 scripts/build_conflicts.py  Builds static/conflicts.json from the raw UCDP CSV
 scripts/fetch_reports.py    Refreshes data/reports/ from ReliefWeb
+scripts/verify_profiles.py  Checks every profile quote against its source
 .env.example                Template for .env.local (BOB_API_KEY)
 tests/                      Backend tests
 requirements.txt            Python dependencies
@@ -117,9 +134,12 @@ requirements.txt            Python dependencies
 
 ## Map conflict data
 
-The map highlights Ukraine and Sudan (the countries with briefings; see `FOCUS` in `static/world.html`). The legend and country card cite the [UCDP/PRIO Armed Conflict Dataset](https://ucdp.uu.se/downloads/) v26.1 (calendar year 2025): both are classified as **war** (1,000+ battle-related deaths in the year).
+The map highlights Ukraine and Sudan (the countries with briefings; see `FOCUS` in `static/world.html`). Both are classified as **war** (1,000+ battle-related deaths in a year) by two UCDP datasets:
 
-To regenerate `static/conflicts.json` after updating the CSV in `data/`:
+- **2026 so far:** the [UCDP Candidate Events Dataset](https://ucdp.uu.se/downloads/#candidate), preliminary event data released monthly (currently through 1 Oct 2026). The country card shows these numbers, labeled as preliminary.
+- **2025 (final):** the [UCDP/PRIO Armed Conflict Dataset](https://ucdp.uu.se/downloads/) v26.1.
+
+When UCDP releases a new monthly file, set `CANDIDATE_FILE` in `scripts/build_conflicts.py` to its name and rerun the script. It downloads the file (about 13 MB, git-ignored) on first run. To regenerate `static/conflicts.json`:
 
 ```bash
 python scripts/build_conflicts.py

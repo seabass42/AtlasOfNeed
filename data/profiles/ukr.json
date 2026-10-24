@@ -1,0 +1,157 @@
+{
+  "iso3": "UKR",
+  "name": "Ukraine",
+  "updated": "2026-10-24",
+  "note": "Every fact is paraphrased from the quoted sentence of the linked source, and dated with that source's publication date. Run python scripts/verify_profiles.py to check each quote against its source.",
+  "sections": [
+    {
+      "key": "current_situation",
+      "title": "Current situation",
+      "facts": [
+        {
+          "text": "Civilian casualties remain at record levels: intensified Russian attacks in September continued a pattern of harm in 2026 far above previous years.",
+          "quote": "Civilian casualties in Ukraine remain at record levels, with intensified Russian attacks in September continuing a pattern of harm in 2026 far exceeding previous years, UN human rights monitors in Ukraine said on Friday.",
+          "source": "UN News",
+          "date": "2026-10-16",
+          "url": "https://news.un.org/en/story/2026/10/1168614"
+        }
+      ]
+    },
+    {
+      "key": "people_in_need",
+      "title": "People in need",
+      "facts": [
+        {
+          "text": "An estimated 10.8 million people across Ukraine need humanitarian assistance in 2026, including displaced and war-affected non-displaced people.",
+          "quote": "Overall, an estimated 10.8 million people across Ukraine will require humanitarian assistance this year, including internally displaced and war-affected non-displaced people.",
+          "source": "United Nations in Ukraine",
+          "date": "2026-01-13",
+          "url": "https://ukraine.un.org/en/308290-relentless-war-ukraine-grinds-humanitarian-partners-aim-reach-41-million-people-2026"
+        }
+      ]
+    },
+    {
+      "key": "civilian_casualties",
+      "title": "Civilian casualties",
+      "facts": [
+        {
+          "text": "At least 328 civilians were killed and 2,105 injured in September 2026, 85% more than in September 2025.",
+          "quote": "At least 328 civilians were killed and 2,105 injured in September 2026, the highest for September since the start of the full-scale invasion, and 85 per cent higher than in September 2025 (249 killed; 1,068 injured).",
+          "source": "UN Human Rights Monitoring Mission in Ukraine (OHCHR)",
+          "date": "2026-10-15",
+          "url": "https://ukraine.ohchr.org/en/Protection-of-Civilians-in-Armed-Conflict-September-2026"
+        },
+        {
+          "text": "From January to September 2026, 2,570 civilians were killed and 15,211 injured, 59% more than in the same period of 2025.",
+          "quote": "Civilian casualties from January to September 2026 (2,570 killed; 15,211 injured) were 59 per cent higher than in the same period in 2025 and more than twice as high as during same period in 2024.",
+          "source": "UN Human Rights Monitoring Mission in Ukraine (OHCHR)",
+          "date": "2026-10-15",
+          "url": "https://ukraine.ohchr.org/en/Protection-of-Civilians-in-Armed-Conflict-September-2026"
+        }
+      ]
+    },
+    {
+      "key": "affected_locations",
+      "title": "Affected areas",
+      "facts": [
+        {
+          "text": "In September 2026 civilians were killed and injured in 22 regions and Kyiv; the highest tolls were in Kyiv, Kherson, Sumy and Zaporizhzhia.",
+          "quote": "Civilians were killed and injured across 22 regions of Ukraine and the city of Kyiv. The highest numbers of killed and injured were documented in Kyiv (32 killed; 340 injured), where civilian casualties were recorded on 22 of 30 days, more frequently than in any previous month since the start of the full-scale invasion. Other cities heavily affected were Kherson (16 killed; 202 injured), Sumy (11 killed; 131 injured), and Zaporizhzhia (7 killed; 127 injured).",
+          "source": "UN Human Rights Monitoring Mission in Ukraine (OHCHR)",
+          "date": "2026-10-15",
+          "url": "https://ukraine.ohchr.org/en/Protection-of-Civilians-in-Armed-Conflict-September-2026"
+        }
+      ]
+    },
+    {
+      "key": "displacement",
+      "title": "Displacement",
+      "facts": [
+        {
+          "text": "Of the 9.6 million people who have had to flee their homes, 3.7 million are displaced inside Ukraine.",
+          "quote": "Out of the 9.6 million people who have had to flee their homes, 3.7 million are internally displaced.",
+          "source": "UN News",
+          "date": "2026-02-17",
+          "url": "https://news.un.org/en/story/2026/02/1166976"
+        },
+        {
+          "text": "About 1.45 million people who returned home now live in frontline districts.",
+          "quote": "Some 1.45 million returnees now live in frontline districts",
+          "source": "UN News",
+          "date": "2026-10-16",
+          "url": "https://news.un.org/en/story/2026/10/1168614"
+        }
+      ]
+    },
+    {
+      "key": "energy",
+      "title": "Energy and heating",
+      "facts": [
+        {
+          "text": "Strikes on 13 and 14 October 2026 hit Kyiv's three main power stations, temporarily leaving 600,000 people in the capital without electricity, according to Ukrainian authorities.",
+          "quote": "On 13 and 14 October, strikes hit multiple energy facilities, including Kyiv’s three main power stations, temporarily leaving 600,000 people in the capital without electricity, according to Ukrainian authorities.",
+          "source": "UN News",
+          "date": "2026-10-16",
+          "url": "https://news.un.org/en/story/2026/10/1168614"
+        },
+        {
+          "text": "During the last cold season, only 32% of households in frontline districts could heat their homes adequately.",
+          "quote": "during the last cold season only 32 per cent of households could heat their homes adequately.",
+          "source": "UN News",
+          "date": "2026-10-16",
+          "url": "https://news.un.org/en/story/2026/10/1168614"
+        }
+      ]
+    },
+    {
+      "key": "health",
+      "title": "Health",
+      "facts": [
+        {
+          "text": "In some regions up to 60% of people need health services and medicines, and as many as 90% urgently need financial aid.",
+          "quote": "In some regions, as many as 90% of people are in urgent need of financial aid, and up to 60% need health services and medicines.",
+          "source": "International Rescue Committee",
+          "date": "2026-10-19",
+          "url": "https://reliefweb.int/report/ukraine/crises-collide-ukraine-attacks-intensify-and-support-shrinks-ahead-winter"
+        }
+      ]
+    },
+    {
+      "key": "children_education",
+      "title": "Children and education",
+      "facts": [
+        {
+          "text": "More than 4,200 educational institutions have been damaged since the war began, according to government estimates.",
+          "quote": "The Ukrainian Government estimates that between January and August of this year, hundreds more educational institutions were damaged, bringing the overall toll since the war began to over 4,200.",
+          "source": "UN News",
+          "date": "2026-09-15",
+          "url": "https://news.un.org/en/story/2026/09/1168336"
+        },
+        {
+          "text": "Nearly 4.2 million children returned to school in September 2026.",
+          "quote": "This month, nearly 4.2 million children across Ukraine – and more than 366,000 teachers - returned to school.",
+          "source": "UN News",
+          "date": "2026-09-15",
+          "url": "https://news.un.org/en/story/2026/09/1168336"
+        }
+      ]
+    },
+    {
+      "key": "humanitarian_response",
+      "title": "Humanitarian response",
+      "facts": [
+        {
+          "text": "The UN and partners are appealing for US$2.3 billion in 2026 to help 4.1 million of the most vulnerable people.",
+          "quote": "The UN and partners appeal for US$2.3 billion in 2026 to assist 4.1 million of the most vulnerable people in Ukraine.",
+          "source": "United Nations in Ukraine",
+          "date": "2026-01-13",
+          "url": "https://ukraine.un.org/en/308290-relentless-war-ukraine-grinds-humanitarian-partners-aim-reach-41-million-people-2026"
+        }
+      ]
+    }
+  ],
+  "not_covered": [
+    "Funding received for the 2026 plan: no source dated after April 2026 was found.",
+    "Food security and water: no 2026 source with figures was found."
+  ]
+}

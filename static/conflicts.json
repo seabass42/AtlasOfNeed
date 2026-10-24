@@ -7,6 +7,14 @@
   "definition": "State-based armed conflicts with at least 25 battle-related deaths in the year. Minor: 25-999 deaths. War: 1,000+ deaths. Excludes non-state and one-sided violence.",
   "citation": "Gleditsch, Nils Petter, et al. (2002). Armed Conflict 1946-2001: A New Dataset. Journal of Peace Research 39(5)."
  },
+ "current_source": {
+  "name": "UCDP Candidate Events Dataset",
+  "version": "v26.01.26.09",
+  "from": "2026-01-01",
+  "through": "2026-10-01",
+  "url": "https://ucdp.uu.se/downloads/#candidate",
+  "definition": "Preliminary event data, released monthly and revised before the final yearly dataset. Deaths are UCDP's best estimate of battle-related deaths in state-based conflict."
+ },
  "countries": {
   "004": {
    "intensity": 1,
@@ -38,7 +46,31 @@
      "territory": null,
      "location": "Afghanistan"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 819,
+    "conflicts": [
+     {
+      "deaths": 596,
+      "events": 78,
+      "sides": "Government of Afghanistan vs Government of Pakistan",
+      "intensity": 1
+     },
+     {
+      "deaths": 117,
+      "events": 9,
+      "sides": "Government of Pakistan vs TTP",
+      "intensity": 1
+     },
+     {
+      "deaths": 106,
+      "events": 44,
+      "sides": "Government of Afghanistan vs Sepahiyan-e Mihan",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "024": {
    "intensity": 1,
@@ -102,7 +134,37 @@
      "territory": "Arakan",
      "location": "Myanmar"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 1280,
+    "conflicts": [
+     {
+      "deaths": 869,
+      "events": 262,
+      "sides": "Government of Myanmar vs CPU",
+      "intensity": 1
+     },
+     {
+      "deaths": 209,
+      "events": 58,
+      "sides": "Government of Myanmar vs ULA",
+      "intensity": 1
+     },
+     {
+      "deaths": 141,
+      "events": 36,
+      "sides": "Government of Myanmar vs KNU",
+      "intensity": 1
+     },
+     {
+      "deaths": 61,
+      "events": 9,
+      "sides": "Government of Myanmar vs KIO",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "116": {
    "intensity": 1,
@@ -148,7 +210,31 @@
      "territory": null,
      "location": "Cameroon"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 195,
+    "conflicts": [
+     {
+      "deaths": 116,
+      "events": 51,
+      "sides": "Government of Cameroon vs Ambazonia insurgents",
+      "intensity": 1
+     },
+     {
+      "deaths": 46,
+      "events": 23,
+      "sides": "Government of Cameroon vs JAS",
+      "intensity": 1
+     },
+     {
+      "deaths": 33,
+      "events": 14,
+      "sides": "Government of Cameroon vs IS",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "140": {
    "intensity": 1,
@@ -162,7 +248,25 @@
      "territory": null,
      "location": "Central African Republic"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 116,
+    "conflicts": [
+     {
+      "deaths": 79,
+      "events": 12,
+      "sides": "Government of Central African Republic vs AAKG",
+      "intensity": 1
+     },
+     {
+      "deaths": 37,
+      "events": 4,
+      "sides": "Government of Central African Republic vs ASP",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "170": {
    "intensity": 1,
@@ -176,7 +280,25 @@
      "territory": null,
      "location": "Colombia"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 244,
+    "conflicts": [
+     {
+      "deaths": 198,
+      "events": 83,
+      "sides": "Government of Colombia vs Guerrilla Coordinadora Nacional Ejército Bolivariano",
+      "intensity": 1
+     },
+     {
+      "deaths": 46,
+      "events": 28,
+      "sides": "Government of Colombia vs EGC",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "180": {
    "intensity": 2,
@@ -199,7 +321,31 @@
      "territory": "Islamic State",
      "location": "DR Congo"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 801,
+    "conflicts": [
+     {
+      "deaths": 668,
+      "events": 145,
+      "sides": "Government of DR Congo vs CRP",
+      "intensity": 1
+     },
+     {
+      "deaths": 106,
+      "events": 28,
+      "sides": "Government of DR Congo vs IS",
+      "intensity": 1
+     },
+     {
+      "deaths": 27,
+      "events": 4,
+      "sides": "Government of DR Congo vs Kata Katanga",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "204": {
    "intensity": 1,
@@ -213,7 +359,19 @@
      "territory": null,
      "location": "Benin"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 28,
+    "conflicts": [
+     {
+      "deaths": 28,
+      "events": 9,
+      "sides": "Government of Benin vs JNIM",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "231": {
    "intensity": 2,
@@ -236,7 +394,37 @@
      "territory": "Oromiya",
      "location": "Ethiopia"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 2,
+    "deaths": 3003,
+    "conflicts": [
+     {
+      "deaths": 2116,
+      "events": 340,
+      "sides": "Government of Ethiopia vs Fano",
+      "intensity": 2
+     },
+     {
+      "deaths": 572,
+      "events": 133,
+      "sides": "Government of Ethiopia vs EPFAS",
+      "intensity": 1
+     },
+     {
+      "deaths": 274,
+      "events": 68,
+      "sides": "Government of Ethiopia vs OLA",
+      "intensity": 1
+     },
+     {
+      "deaths": 41,
+      "events": 5,
+      "sides": "Government of Ethiopia vs GFNF",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "332": {
    "intensity": 2,
@@ -250,7 +438,25 @@
      "territory": null,
      "location": "Haiti"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 179,
+    "conflicts": [
+     {
+      "deaths": 125,
+      "events": 28,
+      "sides": "Government of Haiti vs Viv Ansanm",
+      "intensity": 1
+     },
+     {
+      "deaths": 54,
+      "events": 17,
+      "sides": "Government of Haiti vs Kokorat sans ras",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "356": {
    "intensity": 1,
@@ -291,7 +497,25 @@
      "territory": "Western South East Asia",
      "location": "India"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 109,
+    "conflicts": [
+     {
+      "deaths": 77,
+      "events": 23,
+      "sides": "Government of India vs CPI-Maoist",
+      "intensity": 1
+     },
+     {
+      "deaths": 32,
+      "events": 24,
+      "sides": "Government of India vs Jaish-i-Mohammed",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "360": {
    "intensity": 1,
@@ -305,7 +529,19 @@
      "territory": "West Papua",
      "location": "Indonesia"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 71,
+    "conflicts": [
+     {
+      "deaths": 71,
+      "events": 30,
+      "sides": "Government of Indonesia vs OPM",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "364": {
    "intensity": 2,
@@ -328,7 +564,25 @@
      "territory": null,
      "location": "Iran"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 2,
+    "deaths": 3751,
+    "conflicts": [
+     {
+      "deaths": 3657,
+      "events": 409,
+      "sides": "Government of Iran vs Government of Israel, Government of United States of America",
+      "intensity": 2
+     },
+     {
+      "deaths": 94,
+      "events": 42,
+      "sides": "Government of Iran vs Ansar al-Furqan",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "368": {
    "intensity": 1,
@@ -342,7 +596,31 @@
      "territory": null,
      "location": "Iraq"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 182,
+    "conflicts": [
+     {
+      "deaths": 108,
+      "events": 30,
+      "sides": "Government of Israel, Government of United States of America vs Kataib Hezbollah",
+      "intensity": 1
+     },
+     {
+      "deaths": 47,
+      "events": 17,
+      "sides": "Government of Iraq vs IS",
+      "intensity": 1
+     },
+     {
+      "deaths": 27,
+      "events": 3,
+      "sides": "Government of Yemen vs Forces of the Presidential Leadership Council",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "376": {
    "intensity": 2,
@@ -392,7 +670,25 @@
      "territory": "Southern Lebanon",
      "location": "Israel"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 2,
+    "deaths": 1161,
+    "conflicts": [
+     {
+      "deaths": 1136,
+      "events": 626,
+      "sides": "Government of Israel vs Palestinian Mujahideen Movement",
+      "intensity": 2
+     },
+     {
+      "deaths": 25,
+      "events": 8,
+      "sides": "Government of Iran vs Government of Israel, Government of United States of America",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "404": {
    "intensity": 1,
@@ -438,7 +734,31 @@
      "territory": "Islamic State",
      "location": "Mali"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 1262,
+    "conflicts": [
+     {
+      "deaths": 987,
+      "events": 419,
+      "sides": "Government of Mali vs JNIM",
+      "intensity": 1
+     },
+     {
+      "deaths": 163,
+      "events": 59,
+      "sides": "Government of Mali vs FLA",
+      "intensity": 1
+     },
+     {
+      "deaths": 112,
+      "events": 26,
+      "sides": "Government of Mali vs IS",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "508": {
    "intensity": 1,
@@ -461,7 +781,19 @@
      "territory": null,
      "location": "Mozambique"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 166,
+    "conflicts": [
+     {
+      "deaths": 166,
+      "events": 30,
+      "sides": "Government of Mozambique vs IS",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "562": {
    "intensity": 1,
@@ -484,7 +816,31 @@
      "territory": null,
      "location": "Niger"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 652,
+    "conflicts": [
+     {
+      "deaths": 404,
+      "events": 37,
+      "sides": "Government of Niger vs IS",
+      "intensity": 1
+     },
+     {
+      "deaths": 212,
+      "events": 17,
+      "sides": "Government of Niger vs MPLJ",
+      "intensity": 1
+     },
+     {
+      "deaths": 36,
+      "events": 21,
+      "sides": "XXX436 vs XXX436",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "566": {
    "intensity": 2,
@@ -516,7 +872,37 @@
      "territory": null,
      "location": "Nigeria"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 2,
+    "deaths": 3505,
+    "conflicts": [
+     {
+      "deaths": 1668,
+      "events": 209,
+      "sides": "Government of Nigeria vs IS",
+      "intensity": 2
+     },
+     {
+      "deaths": 1615,
+      "events": 277,
+      "sides": "Government of Nigeria vs Forces of Muhammad Gwaska",
+      "intensity": 2
+     },
+     {
+      "deaths": 194,
+      "events": 20,
+      "sides": "Government of Nigeria vs JNIM",
+      "intensity": 1
+     },
+     {
+      "deaths": 28,
+      "events": 17,
+      "sides": "Government of Nigeria vs IPOB",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "586": {
    "intensity": 2,
@@ -566,7 +952,43 @@
      "territory": "Islamic State",
      "location": "Pakistan"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 2,
+    "deaths": 3489,
+    "conflicts": [
+     {
+      "deaths": 1958,
+      "events": 436,
+      "sides": "Government of Pakistan vs IMP",
+      "intensity": 2
+     },
+     {
+      "deaths": 1365,
+      "events": 384,
+      "sides": "Government of Pakistan vs BRAS",
+      "intensity": 2
+     },
+     {
+      "deaths": 89,
+      "events": 20,
+      "sides": "Government of Afghanistan vs Government of Pakistan",
+      "intensity": 1
+     },
+     {
+      "deaths": 49,
+      "events": 11,
+      "sides": "XXX770 vs XXX770",
+      "intensity": 1
+     },
+     {
+      "deaths": 28,
+      "events": 18,
+      "sides": "Government of Pakistan vs IS",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "608": {
    "intensity": 1,
@@ -580,7 +1002,25 @@
      "territory": null,
      "location": "Philippines"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 135,
+    "conflicts": [
+     {
+      "deaths": 92,
+      "events": 31,
+      "sides": "Government of Philippines vs CPP",
+      "intensity": 1
+     },
+     {
+      "deaths": 43,
+      "events": 13,
+      "sides": "Government of Philippines vs IS",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "643": {
    "intensity": 2,
@@ -594,7 +1034,25 @@
      "territory": null,
      "location": "Russia, Ukraine"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 476,
+    "conflicts": [
+     {
+      "deaths": 447,
+      "events": 253,
+      "sides": "Government of Russia vs Government of Ukraine",
+      "intensity": 1
+     },
+     {
+      "deaths": 29,
+      "events": 1,
+      "sides": "Government of Russia vs Black Spark",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "646": {
    "intensity": 1,
@@ -631,7 +1089,19 @@
      "territory": "Islamic State",
      "location": "Somalia"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 2,
+    "deaths": 2915,
+    "conflicts": [
+     {
+      "deaths": 2915,
+      "events": 274,
+      "sides": "Government of Somalia vs SFC",
+      "intensity": 2
+     }
+    ]
+   }
   },
   "728": {
    "intensity": 1,
@@ -645,7 +1115,19 @@
      "territory": null,
      "location": "South Sudan"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 123,
+    "conflicts": [
+     {
+      "deaths": 123,
+      "events": 10,
+      "sides": "Government of South Sudan vs SPLM/A - IO",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "729": {
    "intensity": 2,
@@ -659,7 +1141,19 @@
      "territory": null,
      "location": "Sudan"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 2,
+    "deaths": 3245,
+    "conflicts": [
+     {
+      "deaths": 3245,
+      "events": 348,
+      "sides": "Government of Sudan vs SFA (Sudan Founding Alliance, which includes the RSF)",
+      "intensity": 2
+     }
+    ]
+   }
   },
   "760": {
    "intensity": 1,
@@ -700,7 +1194,31 @@
      "territory": "Rojava Kurdistan",
      "location": "Syria"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 233,
+    "conflicts": [
+     {
+      "deaths": 123,
+      "events": 51,
+      "sides": "XXX652 vs XXX652",
+      "intensity": 1
+     },
+     {
+      "deaths": 74,
+      "events": 20,
+      "sides": "Government of Syria vs SDF",
+      "intensity": 1
+     },
+     {
+      "deaths": 36,
+      "events": 22,
+      "sides": "Government of Syria vs IS",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "764": {
    "intensity": 1,
@@ -723,7 +1241,19 @@
      "territory": "Patani",
      "location": "Thailand"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 1,
+    "deaths": 42,
+    "conflicts": [
+     {
+      "deaths": 42,
+      "events": 30,
+      "sides": "Government of Thailand vs Patani insurgents",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "768": {
    "intensity": 1,
@@ -765,7 +1295,19 @@
      "territory": null,
      "location": "Russia, Ukraine"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 2,
+    "deaths": 63992,
+    "conflicts": [
+     {
+      "deaths": 63992,
+      "events": 2555,
+      "sides": "Government of Russia vs Government of Ukraine",
+      "intensity": 2
+     }
+    ]
+   }
   },
   "826": {
    "intensity": 1,
@@ -816,7 +1358,25 @@
      "territory": "Islamic State",
      "location": "Burkina Faso"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 2,
+    "deaths": 1795,
+    "conflicts": [
+     {
+      "deaths": 1761,
+      "events": 394,
+      "sides": "Government of Burkina Faso vs JNIM",
+      "intensity": 2
+     },
+     {
+      "deaths": 34,
+      "events": 8,
+      "sides": "Government of Burkina Faso vs IS",
+      "intensity": 1
+     }
+    ]
+   }
   },
   "887": {
    "intensity": 1,
@@ -857,7 +1417,19 @@
      "territory": "South Yemen",
      "location": "Yemen"
     }
-   ]
+   ],
+   "current": {
+    "intensity": 2,
+    "deaths": 4756,
+    "conflicts": [
+     {
+      "deaths": 4756,
+      "events": 444,
+      "sides": "Government of Yemen vs Nakf al-Karama",
+      "intensity": 2
+     }
+    ]
+   }
   }
  }
 }

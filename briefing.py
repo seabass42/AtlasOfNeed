@@ -1,29 +1,48 @@
 """RAG briefing for Atlas of Need.
 
 1. Load saved reports for a country (data/reports/<iso3>.json)
-2. Split them into passages and pick the most relevant ones (keyword match + recency)
+2. Split them into passages and pick the most relevant ones (embedding similarity + recency; keyword match if the
+   embedding model can't be loaded)
 3. Ask IBM Bob (`bob run`) to summarize ONLY those passages, citing passage numbers
 4. Validate: drop any sentence without a real citation
 5. If Bob is missing, slow, or returns bad output, fall back to source excerpts
 """
+import hashlib
 import json
 import math
 import os
 import re
 import subprocess
 import tempfile
+import threading
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
 REPORTS_DIR = DATA_DIR / "reports"
 MAX_PASSAGES = 8
+MAX_PER_REPORT = 2  # so one long report can't fill every slot with near-duplicate passages
 BOB_TIMEOUT_S = 60
 # The briefing only needs the passages in the prompt, so Bob gets no tools (files, commands, MCP, subagents...).
 BOB_TOOL_GROUPS_OFF = "read,edit,execute,mcp,skill,todo,subagent,mode"
 
+# Semantic search: passages and questions become vectors, and similar meaning means nearby vectors, so "refugees" finds
+# "families fled their homes" without sharing a word. Small English model (~67 MB), downloaded once into .cache/.
+EMBED_MODEL = "BAAI/bge-small-en-v1.5"
+CACHE_DIR = Path(__file__).parent / ".cache"
+# Calibrated on the October 2026 reports: off-topic questions ("what is 1+1", "best pizza recipe") scored at most 0.58,
+# questions the reports cover scored 0.66 or more.
+MIN_SIMILARITY = 0.62       # below this, the reports don't answer the question at all
+MIN_PASSAGE_SIMILARITY = 0.55  # weaker passages are left out even when the question does match
+RECENCY_WEIGHT = 0.02       # small nudge toward newer reports when similarity is close
+DEFAULT_QUERY = ("What is the current humanitarian situation: displacement, food insecurity, health, "
+                 "civilian casualties, humanitarian access and funding needs?")
+
+# Keyword fallback, only used when the embedding model is unavailable.
 STOP = set("the a an and or of to in on for with is are was were be by at from as that this it its into than then".split())
-DEFAULT_QUERY = "displacement civilians humanitarian access food insecurity casualties health aid needs funding"
+QUESTION_STOP = set("""what who whom whose when where why how which will would could should can does did doing done
+    has have had about tell please there their they them any much many some more most also just like know give show
+    explain describe happening going right now today currently current latest recent news update info information""".split())
 
 
 def load_conflicts() -> dict:
@@ -62,31 +81,131 @@ def _parse_date(s: str) -> date:
         return date.min
 
 
-def retrieve(passages: list[dict], question: str = "") -> list[dict]:
+_model = None
+_model_lock = threading.Lock()
+_vectors: dict = {}
+
+
+def embedding_model():
+    """The embedding model, loaded once. None if fastembed isn't installed or the model can't be downloaded."""
+    global _model
+    with _model_lock:
+        if _model is None:
+            try:
+                from fastembed import TextEmbedding
+                _model = TextEmbedding(EMBED_MODEL, cache_dir=str(CACHE_DIR / "models"))
+            except Exception as e:  # missing package, no internet on first run...
+                print("Embeddings unavailable, using keyword search:", str(e)[:200])
+                _model = False
+        return _model or None
+
+
+def _unit(vectors):
+    import numpy as np
+    vectors = np.asarray(vectors, dtype=np.float32)
+    return vectors / np.linalg.norm(vectors, axis=-1, keepdims=True)
+
+
+def passage_vectors(passages: list[dict]):
+    """Embeddings for these passages, cached in memory and in .cache/embeddings/ (keyed by the passage text)."""
+    import numpy as np
+    key = hashlib.sha256("\x00".join(p["text"] for p in passages).encode()).hexdigest()[:16]
+    if key not in _vectors:
+        f = CACHE_DIR / "embeddings" / f"{key}.npy"
+        if f.exists():
+            vectors = np.load(f)
+        else:
+            vectors = _unit(list(embedding_model().passage_embed([p["text"] for p in passages])))
+            f.parent.mkdir(parents=True, exist_ok=True)
+            np.save(f, vectors)
+        _vectors[key] = vectors
+    return _vectors[key]
+
+
+def warm_up() -> None:
+    """Load the model and embed every briefing country's reports, so the first click doesn't wait for it."""
+    if embedding_model() is None:
+        return
+    for c in load_conflicts()["countries"]:
+        reports = load_reports(c["iso3"])
+        if reports:
+            passage_vectors([p for r in reports for p in chunk(r)])
+    print("Embeddings ready")
+
+
+def _freshness(passages: list[dict]) -> list[float]:
+    """1.0 for the newest report, falling to 0 at 90 days older."""
+    newest = max(_parse_date(p.get("date", "")) for p in passages)
+    if newest == date.min:
+        return [0.0] * len(passages)
+    return [max(0.0, 1 - (newest - _parse_date(p.get("date", ""))).days / 90) for p in passages]
+
+
+def _cap_per_report(ranked: list[dict]) -> list[dict]:
+    picked, per_report = [], {}
+    for p in ranked:
+        key = p.get("url") or p.get("title")
+        if per_report.get(key, 0) < MAX_PER_REPORT:
+            per_report[key] = per_report.get(key, 0) + 1
+            picked.append(p)
+        if len(picked) == MAX_PASSAGES:
+            break
+    return picked
+
+
+def retrieve(passages: list[dict], question: str = "", country: str = "") -> list[dict]:
+    """Most relevant passages, at most MAX_PER_REPORT per report.
+
+    Without a question, ranks against a default needs-focused query. With a question, returns [] when nothing in the
+    reports is close enough to answer it, so an off-topic question gets no passages instead of random ones.
+    """
     if not passages:
         return []
-    q = set(tokens(question or DEFAULT_QUERY))
-    newest = max(_parse_date(p.get("date", "")) for p in passages)
+    model = embedding_model()
+    if model is None:
+        return keyword_retrieve(passages, question, country)
+    query = _unit(list(model.query_embed([question or DEFAULT_QUERY])))[0]
+    similarity = passage_vectors(passages) @ query
+    if question and similarity.max() < MIN_SIMILARITY:
+        return []
+    scores = [sim + RECENCY_WEIGHT * fresh for sim, fresh in zip(similarity.tolist(), _freshness(passages))]
+    order = sorted(range(len(passages)), key=lambda i: scores[i], reverse=True)
+    return _cap_per_report([passages[i] for i in order if not question or similarity[i] >= MIN_PASSAGE_SIMILARITY])
 
-    def score(p):
-        words = tokens(p["text"])
-        hits = sum(1 for w in words if w in q)
-        age = (newest - _parse_date(p.get("date", ""))).days if newest != date.min else 0
-        return hits / math.sqrt(len(words) + 1) + max(0.0, 1 - age / 90) * 0.3
 
-    return sorted(passages, key=score, reverse=True)[:MAX_PASSAGES]
+def keyword_retrieve(passages: list[dict], question: str = "", country: str = "") -> list[dict]:
+    """Fallback: rank by shared words. Filler words and the country's own name don't count as a match."""
+    skip = QUESTION_STOP | set(tokens(country))
+    q = {w[:6] for w in tokens(question or DEFAULT_QUERY) if not question or w not in skip}  # w[:6]: crude stem
+    if not q:
+        return []
+
+    def hits(p):
+        return sum(1 for w in tokens(p["text"]) if w[:6] in q)
+
+    scored = [(hits(p) / math.sqrt(len(tokens(p["text"])) + 1) + 0.3 * fresh, p)
+              for p, fresh in zip(passages, _freshness(passages)) if not question or hits(p) > 0]
+    return _cap_per_report([p for _, p in sorted(scored, key=lambda x: x[0], reverse=True)])
 
 
 def build_prompt(country: str, question: str, passages: list[dict]) -> str:
     numbered = "\n\n".join(f"[{i + 1}] ({p['source']}, {p['date']}) {p['text']}" for i, p in enumerate(passages))
-    focus = f"Focus on this question: {question}\n" if question else ""
+    if question:
+        focus = (f"The reader asked: {question}\n"
+                 "Answer ONLY that question. If the passages do not contain information that answers it, return an empty "
+                 "bullets list and use gaps to say plainly that the sources do not cover it. Never fill the answer with "
+                 "unrelated facts from the passages.\n")
+        length = "Write up to 6 bullets that directly answer the question, or none if the passages don't answer it."
+    else:
+        focus = ""
+        length = "Write 4 to 6 bullets."
     return f"""You are writing a short humanitarian situation briefing about {country} for journalists, students and NGO staff.
 Use ONLY the numbered passages below. Do not use any tools and do not use outside knowledge. Do not predict events, give military analysis,
 take sides, or give safety or evacuation advice. If the passages do not cover something, say so.
 {focus}
 Return ONLY valid JSON, no other text, in this exact shape:
 {{"bullets":[{{"text":"one factual sentence","cites":[1,2]}}],"gaps":"one sentence on what the sources do not cover"}}
-Write 4 to 6 bullets. Every bullet must cite at least one passage number.
+{length} Every bullet must cite at least one passage number.
 
 PASSAGES:
 {numbered}"""
@@ -152,15 +271,25 @@ def validate(ans: dict, n: int) -> dict:
                 cites.append(c)
         if cites:  # drop anything uncited
             bullets.append({"text": b["text"].strip()[:400], "cites": cites})
+    gaps = ans.get("gaps") if isinstance(ans.get("gaps"), str) else ""
+    if not ans["bullets"] and gaps.strip():
+        return {"bullets": [], "gaps": gaps[:300], "answered": False}  # the model says the sources don't cover it
     if not bullets:
         raise ValueError("No cited bullets")
-    gaps = ans.get("gaps") if isinstance(ans.get("gaps"), str) else ""
-    return {"bullets": bullets[:6], "gaps": gaps[:300]}
+    return {"bullets": bullets[:6], "gaps": gaps[:300], "answered": True}
 
 
 def fallback(passages: list[dict]) -> dict:
-    bullets = [{"text": re.split(r"(?<=[.!?])\s", p["text"])[0][:300], "cites": [i + 1]} for i, p in enumerate(passages[:4])]
-    return {"bullets": bullets, "gaps": "AI summary unavailable; showing the opening sentence of the most relevant source passages."}
+    bullets, seen = [], set()
+    for i, p in enumerate(passages):
+        if p.get("url") in seen:  # one excerpt per report
+            continue
+        seen.add(p.get("url"))
+        bullets.append({"text": re.split(r"(?<=[.!?])\s", p["text"])[0][:300], "cites": [i + 1]})
+        if len(bullets) == 4:
+            break
+    return {"bullets": bullets, "answered": True,
+            "gaps": "AI summary unavailable; showing the opening sentence of the most relevant source passages."}
 
 
 def build_briefing(iso3: str, question: str = "") -> dict:
@@ -173,9 +302,14 @@ def build_briefing(iso3: str, question: str = "") -> dict:
     }
     reports = load_reports(iso3)
     if not reports:
-        return {**base, "mode": "none", "bullets": [], "gaps": "No briefing has been prepared for this country yet.", "sources": []}
+        return {**base, "mode": "none", "answered": False, "bullets": [], "gaps": "No briefing has been prepared for this country yet.", "sources": []}
 
-    passages = retrieve([p for r in reports for p in chunk(r)], question)
+    passages = retrieve([p for r in reports for p in chunk(r)], question, base["country"])
+    if not passages:  # only possible with a question: nothing in the reports matches it
+        return {**base, "mode": "no_match", "answered": False, "bullets": [], "sources": [],
+                "gaps": f"The saved reports about {base['country']} don't mention anything matching this question, "
+                        "so there is nothing to answer it with. Try asking about displacement, food, health, "
+                        "shelter or humanitarian access."}
     sources = [{"n": i + 1, "title": p["title"], "source": p["source"], "date": p["date"], "url": p["url"]} for i, p in enumerate(passages)]
     newest = max((s["date"] for s in sources), default="")
 

@@ -61,3 +61,79 @@ def test_api_briefing_ai_path(monkeypatch):
 
 def test_api_rejects_bad_code():
     assert client.post("/api/briefing", json={"iso3": "../x"}).status_code == 400
+
+
+def test_off_topic_question_retrieves_nothing():
+    p = [{"text": "Food insecurity rose sharply among displaced families in Darfur.", "date": "2026-10-01", "url": "a"}]
+    assert retrieve(p, "what is 1+1") == []
+    assert retrieve(p, "what is the", "Sudan") == []  # filler words alone don't count as a match
+
+
+def sudan_passages():
+    return [p for r in briefing.load_reports("SDN") for p in briefing.chunk(r)]
+
+
+def test_semantic_search_matches_meaning_not_words():
+    if briefing.embedding_model() is None:
+        pytest.skip("embedding model not available")
+    p = [
+        {"text": "Wheat and sorghum prices at the central market were stable this week.", "date": "2026-10-01", "url": "a"},
+        {"text": "Thousands of families fled their villages and are now sheltering in overcrowded camps.", "date": "2026-10-01", "url": "b"},
+    ]
+    # No word in common with the camp passage, but the same meaning.
+    for q in ("refugees", "people forced from homes"):
+        assert briefing.retrieve(p, q)[0]["url"] == "b", q
+
+
+def test_general_and_topical_questions_find_passages():
+    if briefing.embedding_model() is None:
+        pytest.skip("embedding model not available")
+    passages = sudan_passages()
+    for q in ("what is happening in Sudan", "how are refugees doing", "is there famine or starvation"):
+        assert briefing.retrieve(passages, q, "Sudan"), q
+    for q in ("what is 1+1", "best pizza recipe", "what is the capital of France"):
+        assert briefing.retrieve(passages, q, "Sudan") == [], q
+
+
+def test_keyword_fallback_when_model_unavailable(monkeypatch):
+    monkeypatch.setattr(briefing, "embedding_model", lambda: None)
+    p = [
+        {"text": "Weather was mild and sports events continued as normal across the region this week.", "date": "2026-10-01", "url": "a"},
+        {"text": "Food insecurity rose sharply and humanitarian access to displaced families remained limited.", "date": "2026-10-01", "url": "b"},
+    ]
+    assert briefing.retrieve(p, "food access")[0]["url"] == "b"
+    assert briefing.retrieve(p, "what is 1+1") == []
+
+
+def test_question_matches_word_variants():
+    p = [{"text": "Thousands of refugees and displaced people crossed the border.", "date": "2026-10-01", "url": "a"}]
+    assert retrieve(p, "how many refugee displacement") == p
+
+
+def test_retrieval_caps_passages_per_report():
+    p = [{"text": f"Food aid and humanitarian access update number {i}.", "date": "2026-10-01", "url": "same"} for i in range(5)]
+    assert len(retrieve(p)) == briefing.MAX_PER_REPORT
+
+
+def test_api_off_topic_question_skips_ai(monkeypatch):
+    monkeypatch.setenv("BOB_API_KEY", "test")
+    monkeypatch.setattr(briefing, "run_bob", lambda prompt: pytest.fail("Bob should not be called"))
+    d = client.post("/api/briefing", json={"iso3": "SDN", "question": "what is 1+1"}).json()
+    assert d["mode"] == "no_match" and d["bullets"] == [] and d["sources"] == [] and not d["answered"]
+
+
+def test_ai_can_say_sources_dont_cover_question(monkeypatch):
+    monkeypatch.setenv("BOB_API_KEY", "test")
+    monkeypatch.setattr(briefing, "run_bob", lambda prompt: json.dumps(
+        {"last_message": '{"bullets":[],"gaps":"The sources do not cover how many hospitals are working."}'}))
+    d = client.post("/api/briefing", json={"iso3": "SDN", "question": "how many hospitals are working in Darfur"}).json()
+    assert d["mode"] == "ai" and d["bullets"] == [] and not d["answered"] and "do not cover" in d["gaps"]
+
+
+def test_api_profile():
+    d = client.get("/api/profile/sdn").json()
+    assert d["iso3"] == "SDN"
+    facts = [f for s in d["sections"] for f in s["facts"]]
+    assert facts and all(f["quote"] and f["url"].startswith("https://") and f["date"] for f in facts)
+    assert client.get("/api/profile/xyz").status_code == 404
+    assert client.get("/api/profile/x1").status_code == 400

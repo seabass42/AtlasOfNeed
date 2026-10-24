@@ -95,7 +95,10 @@ def truncate(text: str, limit: int) -> str:
 def fetch(iso3: str) -> list[dict]:
     req = urllib.request.Request(FEED_URL.format(iso3=iso3.lower()), headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=30) as r:
-        root = ET.fromstring(r.read())
+        body = r.read()
+    if not body.strip():
+        raise RuntimeError("ReliefWeb sent an empty response; it blocks scripts for a while after many requests, try again later")
+    root = ET.fromstring(body)
 
     reports, seen = [], set()
     for item in root.findall("./channel/item"):

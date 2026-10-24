@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>body{margin:0}</style>
-<title>Dispatch Atlas</title>
+<title>Atlas of Need</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,6 +20,8 @@
     --muted: #5b6875;
     --accent: #c2410c;
     --accent-fill: #fbe1d2;
+    --war: #d8483a;
+    --minor: #f3bcae;
     --panel: rgba(255, 255, 255, 0.92);
     --panel-line: #c9d2da;
     --font-ui: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
@@ -30,12 +32,14 @@
       --ocean: #0f161d; --land: #1f2a35; --land-hover: #2b3846; --border: #3e4d5c;
       --ink: #e8edf2; --muted: #93a2b0; --accent: #fb923c; --accent-fill: #5a2a12;
       --panel: rgba(21, 29, 38, 0.92); --panel-line: #33414f; color-scheme: dark;
+      --war: #c9473b; --minor: #6a3a36;
     }
   }
   :root[data-theme="dark"] {
     --ocean: #0f161d; --land: #1f2a35; --land-hover: #2b3846; --border: #3e4d5c;
     --ink: #e8edf2; --muted: #93a2b0; --accent: #fb923c; --accent-fill: #5a2a12;
     --panel: rgba(21, 29, 38, 0.92); --panel-line: #33414f; color-scheme: dark;
+    --war: #c9473b; --minor: #6a3a36;
   }
 
   html, body { height: 100%; }
@@ -60,7 +64,11 @@
   .country:hover { fill: var(--land-hover); }
   .country:focus { outline: none; }
   .country:focus-visible { stroke: var(--accent); stroke-width: 2px; }
-  .country.active { fill: var(--accent-fill); stroke: var(--accent); stroke-width: 1.5px; }
+  .country.conflict-minor { fill: var(--minor); }
+  .country.conflict-war { fill: var(--war); }
+  .country.conflict-minor:hover, .country.conflict-war:hover { filter: brightness(0.92); }
+  .country.active { stroke: var(--ink); stroke-width: 2px; }
+  .country.active:not(.conflict-minor):not(.conflict-war) { fill: var(--land-hover); }
   .sphere { fill: none; stroke: var(--border); stroke-width: 0.6px; vector-effect: non-scaling-stroke; }
 
   .header {
@@ -103,9 +111,40 @@
   button.reset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   button.reset:disabled { opacity: 0.45; cursor: default; border-color: var(--panel-line); color: var(--ink); }
 
+  .card { max-height: min(55vh, 520px); overflow-y: auto; }
+  .status { font-size: 0.875rem; font-weight: 500; margin: 2px 0 0; display: flex; align-items: center; gap: 8px; }
+  .conflict-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .conflict-list li { font-size: 0.8125rem; line-height: 1.35; padding-left: 10px; border-left: 2px solid var(--minor); }
+  .conflict-list li.war { border-left-color: var(--war); }
+  .conflict-meta { display: block; color: var(--muted); font-size: 0.75rem; margin-top: 1px; }
+  .note { font-size: 0.75rem; color: var(--muted); margin: 0; line-height: 1.4; }
+  .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; border: 1px solid var(--border); flex: none; }
+  .swatch.war { background: var(--war); }
+  .swatch.minor { background: var(--minor); }
+
+  .legend {
+    position: absolute;
+    right: max(16px, env(safe-area-inset-right, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    max-width: 260px;
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: grid; gap: 6px;
+    font-size: 0.8125rem;
+    backdrop-filter: blur(6px);
+  }
+  .legend-row { display: flex; align-items: center; gap: 8px; margin: 0; }
+  .legend .note a { color: inherit; }
+
   @media (max-width: 480px) {
     .hint { flex-basis: 100%; }
     .name { font-size: 1.125rem; }
+  }
+  @media (max-width: 720px) {
+    .legend { top: calc(84px + env(safe-area-inset-top, 0px)); bottom: auto; max-width: 200px; }
+    .legend .note { display: none; }
   }
 </style>
 
@@ -115,7 +154,7 @@
   <svg id="map" role="img" aria-label="World map. Select a country to zoom in."></svg>
 
   <div class="header">
-    <h1 class="brand">Dispatch Atlas</h1>
+    <h1 class="brand">Atlas of Need</h1>
     <p class="hint">Click a country to zoom in. Click it again, the ocean, or Reset to zoom out.</p>
   </div>
 
@@ -123,8 +162,15 @@
     <p class="eyebrow" id="eyebrow">World view</p>
     <p class="name" id="name">No country selected</p>
     <p class="coords" id="coords">Natural Earth, 1:50m</p>
+    <div id="conflict-info" hidden></div>
     <button class="reset" id="reset" type="button" disabled>Reset view</button>
   </section>
+
+  <aside class="legend" aria-label="Map legend">
+    <p class="eyebrow">Briefings available</p>
+    <p class="legend-row"><span class="swatch war"></span>War</p>
+    <p class="note" id="legend-source">Loading conflict data…</p>
+  </aside>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
@@ -138,6 +184,8 @@ const nameEl = document.getElementById("name");
 const eyebrowEl = document.getElementById("eyebrow");
 const coordsEl = document.getElementById("coords");
 const resetBtn = document.getElementById("reset");
+const conflictInfoEl = document.getElementById("conflict-info");
+let conflictData = null;
 
 const countries = topojson.feature(WORLD, WORLD.objects.countries).features
   .filter(d => d.properties && d.properties.name !== "Antarctica");
@@ -164,6 +212,65 @@ const countryPaths = g.selectAll("path.country")
     if (event.key === "Enter" || event.key === " ") { event.preventDefault(); select(d, event.currentTarget); }
   });
 countryPaths.append("title").text(d => d.properties.name);
+
+// For the MVP only the countries we have briefings for are highlighted: Ukraine (804) and Sudan (729).
+// Both are classified as war by UCDP, and the conflict details shown come from that dataset (see scripts/build_conflicts.py).
+const FOCUS = new Set(["804", "729"]);
+const INTENSITY_LABEL = { 1: "Minor conflict", 2: "War" };
+const conflictFor = (d) => (conflictData && FOCUS.has(d.id) && conflictData.countries[d.id]) || null;
+
+fetch("/static/conflicts.json")
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(data => {
+    conflictData = data;
+    const src = data.source;
+    const sourceEl = document.getElementById("legend-source");
+    sourceEl.innerHTML = "";
+    sourceEl.append(`These are classified as war because they had 1,000+ battle-related deaths in ${src.year}, according to the `);
+    const link = Object.assign(document.createElement("a"), { href: src.url, target: "_blank", rel: "noopener", textContent: `${src.name} v${src.version}` });
+    sourceEl.append(link, ".");
+    countryPaths
+      .classed("conflict-minor", d => conflictFor(d)?.intensity === 1)
+      .classed("conflict-war", d => conflictFor(d)?.intensity === 2)
+      .attr("aria-label", d => {
+        const c = conflictFor(d);
+        return c ? `${d.properties.name}, ${INTENSITY_LABEL[c.intensity].toLowerCase()}` : d.properties.name;
+      });
+    countryPaths.select("title").text(d => {
+      const c = conflictFor(d);
+      return c ? `${d.properties.name} · ${INTENSITY_LABEL[c.intensity]}` : d.properties.name;
+    });
+    if (active) renderConflictInfo(active.datum);
+  })
+  .catch(() => {
+    document.getElementById("legend-source").textContent = "Conflict data failed to load.";
+  });
+
+function renderConflictInfo(d) {
+  conflictInfoEl.innerHTML = "";
+  const c = conflictFor(d);
+  if (!c) { conflictInfoEl.hidden = true; return; }
+  const status = document.createElement("p");
+  status.className = "status";
+  const swatch = document.createElement("span");
+  swatch.className = "swatch " + (c.intensity === 2 ? "war" : "minor");
+  const n = c.conflicts.length;
+  status.append(swatch, `${INTENSITY_LABEL[c.intensity]} · ${n} active conflict${n > 1 ? "s" : ""} in ${conflictData.source.year}`);
+
+  const list = document.createElement("ul");
+  list.className = "conflict-list";
+  for (const k of c.conflicts) {
+    const li = document.createElement("li");
+    if (k.intensity === 2) li.className = "war";
+    const meta = document.createElement("span");
+    meta.className = "conflict-meta";
+    meta.textContent = [INTENSITY_LABEL[k.intensity], k.type, k.territory].filter(Boolean).join(" · ");
+    li.append(k.sides, meta);
+    list.append(li);
+  }
+  conflictInfoEl.append(status, list);
+  conflictInfoEl.hidden = false;
+}
 
 svg.on("click", () => reset());
 resetBtn.addEventListener("click", () => reset());
@@ -210,6 +317,7 @@ function select(d, el) {
   nameEl.textContent = d.properties.name;
   coordsEl.textContent = "Centroid " + formatCoord(lat, "N", "S") + "  " + formatCoord(lon, "E", "W");
   resetBtn.disabled = false;
+  renderConflictInfo(d);
   zoomTo(d, 1100);
 }
 
@@ -219,6 +327,7 @@ function reset() {
   eyebrowEl.textContent = "World view";
   nameEl.textContent = "No country selected";
   coordsEl.textContent = "Natural Earth, 1:50m";
+  conflictInfoEl.hidden = true;
   resetBtn.disabled = true;
   svg.transition()
     .duration(prefersReducedMotion() ? 0 : 900)

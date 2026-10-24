@@ -68,10 +68,22 @@ python -m pytest tests -q
 ## Project layout
 
 ```
-main.py             FastAPI backend: map page + /api/conflicts + /api/briefing
-briefing.py         Retrieval, IBM Bob call, citation check, fallback
-data/               Conflict list and saved reports
-static/world.html   Frontend: the map (d3 + topojson, Natural Earth 1:50m borders)
-tests/              Backend tests
-requirements.txt    Python dependencies
+main.py                     FastAPI backend: map page, /static files, /api/conflicts, /api/briefing
+briefing.py                 Retrieval, IBM Bob call, citation check, fallback
+data/                       Conflict list, saved reports, raw UCDP CSV
+static/world.html           Frontend: the map (d3 + topojson, Natural Earth 1:50m borders)
+static/conflicts.json       UCDP conflict details shown on the map (generated, see below)
+scripts/build_conflicts.py  Builds static/conflicts.json from the raw UCDP CSV
+tests/                      Backend tests
+requirements.txt            Python dependencies
+```
+
+## Map conflict data
+
+The map highlights Ukraine and Sudan (the countries with briefings; see `FOCUS` in `static/world.html`). The legend and country card cite the [UCDP/PRIO Armed Conflict Dataset](https://ucdp.uu.se/downloads/) v26.1 (calendar year 2025): both are classified as **war** (1,000+ battle-related deaths in the year).
+
+To regenerate `static/conflicts.json` after updating the CSV in `data/`:
+
+```bash
+python scripts/build_conflicts.py
 ```

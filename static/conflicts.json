@@ -1,0 +1,863 @@
+{
+ "source": {
+  "name": "UCDP/PRIO Armed Conflict Dataset",
+  "version": "26.1",
+  "year": 2025,
+  "url": "https://ucdp.uu.se/downloads/",
+  "definition": "State-based armed conflicts with at least 25 battle-related deaths in the year. Minor: 25-999 deaths. War: 1,000+ deaths. Excludes non-state and one-sided violence.",
+  "citation": "Gleditsch, Nils Petter, et al. (2002). Armed Conflict 1946-2001: A New Dataset. Journal of Peace Research 39(5)."
+ },
+ "countries": {
+  "004": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "11639",
+     "sides": "Government of Afghanistan vs Government of Pakistan",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Durand line",
+     "location": "Afghanistan, Pakistan"
+    },
+    {
+     "id": "13637",
+     "sides": "Government of Afghanistan vs IS",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "Afghanistan"
+    },
+    {
+     "id": "333",
+     "sides": "Government of Afghanistan vs NRF",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Afghanistan"
+    }
+   ]
+  },
+  "024": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "387",
+     "sides": "Government of Angola vs FLEC-FAC-TN",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Cabinda",
+     "location": "Angola"
+    }
+   ]
+  },
+  "104": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "222",
+     "sides": "Government of Myanmar (Burma) vs NUG, PSLF",
+     "intensity": 2,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Myanmar (Burma)"
+    },
+    {
+     "id": "231",
+     "sides": "Government of Myanmar (Burma) vs KIO",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Kachin",
+     "location": "Myanmar (Burma)"
+    },
+    {
+     "id": "253",
+     "sides": "Government of Myanmar (Burma) vs KNPP",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Karenni",
+     "location": "Myanmar (Burma)"
+    },
+    {
+     "id": "221",
+     "sides": "Government of Myanmar (Burma) vs KNU",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Karen",
+     "location": "Myanmar (Burma)"
+    },
+    {
+     "id": "223",
+     "sides": "Government of Myanmar (Burma) vs ULA",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Arakan",
+     "location": "Myanmar (Burma)"
+    }
+   ]
+  },
+  "116": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "294",
+     "sides": "Government of Cambodia (Kampuchea) vs Government of Thailand",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Common Border",
+     "location": "Cambodia (Kampuchea), Thailand"
+    }
+   ]
+  },
+  "120": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "14129",
+     "sides": "Government of Cameroon vs Ambazonia insurgents",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Ambazonia",
+     "location": "Cameroon"
+    },
+    {
+     "id": "13638",
+     "sides": "Government of Cameroon vs IS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "Cameroon"
+    },
+    {
+     "id": "353",
+     "sides": "Government of Cameroon vs JAS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Cameroon"
+    }
+   ]
+  },
+  "140": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "416",
+     "sides": "Government of Central African Republic vs CMSPR, CPC, CPC-F",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Central African Republic"
+    }
+   ]
+  },
+  "170": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "289",
+     "sides": "Government of Colombia vs ELN, EMBF, FARC-EMC",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Colombia"
+    }
+   ]
+  },
+  "180": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "283",
+     "sides": "Government of DR Congo (Zaire) vs AFC, CRP",
+     "intensity": 2,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "DR Congo (Zaire)"
+    },
+    {
+     "id": "14692",
+     "sides": "Government of DR Congo (Zaire) vs IS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "DR Congo (Zaire)"
+    }
+   ]
+  },
+  "204": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "15256",
+     "sides": "Government of Benin vs JNIM",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Benin"
+    }
+   ]
+  },
+  "231": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "16069",
+     "sides": "Government of Ethiopia vs Fano",
+     "intensity": 2,
+     "type": "Intrastate",
+     "incompatibility": "Government and territory",
+     "territory": "Amhara",
+     "location": "Ethiopia"
+    },
+    {
+     "id": "413",
+     "sides": "Government of Ethiopia vs OLA",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Territory",
+     "territory": "Oromiya",
+     "location": "Ethiopia"
+    }
+   ]
+  },
+  "332": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "381",
+     "sides": "Government of Haiti vs Viv Ansanm",
+     "intensity": 2,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Haiti"
+    }
+   ]
+  },
+  "356": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "227",
+     "sides": "Government of India vs CPI-Maoist",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "India"
+    },
+    {
+     "id": "218",
+     "sides": "Government of India vs Government of Pakistan",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Kashmir",
+     "location": "India, Pakistan"
+    },
+    {
+     "id": "364",
+     "sides": "Government of India vs Kashmir insurgents",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Kashmir",
+     "location": "India"
+    },
+    {
+     "id": "13653",
+     "sides": "Government of India vs UNLFW",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Western South East Asia",
+     "location": "India"
+    }
+   ]
+  },
+  "360": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "291",
+     "sides": "Government of Indonesia vs OPM",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "West Papua",
+     "location": "Indonesia"
+    }
+   ]
+  },
+  "364": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "14609",
+     "sides": "Government of Iran vs Government of Israel",
+     "intensity": 2,
+     "type": "Interstate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Iran, Israel"
+    },
+    {
+     "id": "338",
+     "sides": "Government of Iran vs Jaish al-Adl",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Iran"
+    }
+   ]
+  },
+  "368": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "259",
+     "sides": "Government of Iraq vs IS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Iraq"
+    }
+   ]
+  },
+  "376": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "14609",
+     "sides": "Government of Iran vs Government of Israel",
+     "intensity": 2,
+     "type": "Interstate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Iran, Israel"
+    },
+    {
+     "id": "234",
+     "sides": "Government of Israel vs Hamas, Palestinian Mujahideen Movement, PIJ, PRC",
+     "intensity": 2,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Palestine",
+     "location": "Israel"
+    },
+    {
+     "id": "302",
+     "sides": "Government of Israel vs Government of Syria",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Golan Heights",
+     "location": "Israel, Syria"
+    },
+    {
+     "id": "16470",
+     "sides": "Government of Israel vs Government of Yemen (North Yemen)",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Israel, Yemen (North Yemen)"
+    },
+    {
+     "id": "426",
+     "sides": "Government of Israel vs Hezbollah",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Southern Lebanon",
+     "location": "Israel"
+    }
+   ]
+  },
+  "404": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "13646",
+     "sides": "Government of Kenya vs Al-Shabaab",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Northeastern Province and Coast",
+     "location": "Kenya"
+    }
+   ]
+  },
+  "466": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "11347",
+     "sides": "Government of Mali vs JNIM",
+     "intensity": 2,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Mali"
+    },
+    {
+     "id": "16038",
+     "sides": "Government of Mali vs FLA",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government and territory",
+     "territory": "Azawad",
+     "location": "Mali"
+    },
+    {
+     "id": "14113",
+     "sides": "Government of Mali vs IS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "Mali"
+    }
+   ]
+  },
+  "508": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "14845",
+     "sides": "Government of Mozambique vs IS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "Mozambique"
+    },
+    {
+     "id": "332",
+     "sides": "Government of Mozambique vs Naparama",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Mozambique"
+    }
+   ]
+  },
+  "562": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "13639",
+     "sides": "Government of Niger vs IS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "Niger"
+    },
+    {
+     "id": "430",
+     "sides": "Government of Niger vs JNIM",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Niger"
+    }
+   ]
+  },
+  "566": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "13641",
+     "sides": "Government of Nigeria vs IS",
+     "intensity": 2,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "Nigeria"
+    },
+    {
+     "id": "303",
+     "sides": "Government of Nigeria vs IPOB",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Biafra",
+     "location": "Nigeria"
+    },
+    {
+     "id": "297",
+     "sides": "Government of Nigeria vs JAS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Nigeria"
+    }
+   ]
+  },
+  "586": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "404",
+     "sides": "Government of Pakistan vs HGB, IMP, TTP",
+     "intensity": 2,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Pakistan"
+    },
+    {
+     "id": "11639",
+     "sides": "Government of Afghanistan vs Government of Pakistan",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Durand line",
+     "location": "Afghanistan, Pakistan"
+    },
+    {
+     "id": "218",
+     "sides": "Government of India vs Government of Pakistan",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Kashmir",
+     "location": "India, Pakistan"
+    },
+    {
+     "id": "325",
+     "sides": "Government of Pakistan vs BRAS",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Balochistan",
+     "location": "Pakistan"
+    },
+    {
+     "id": "13936",
+     "sides": "Government of Pakistan vs IS",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "Pakistan"
+    }
+   ]
+  },
+  "608": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "209",
+     "sides": "Government of Philippines vs CPP",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Philippines"
+    }
+   ]
+  },
+  "643": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "13243",
+     "sides": "Government of Russia (Soviet Union) vs Government of Ukraine",
+     "intensity": 2,
+     "type": "Interstate",
+     "incompatibility": "Government and territory",
+     "territory": "Crimea",
+     "location": "Russia (Soviet Union), Ukraine"
+    }
+   ]
+  },
+  "646": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "374",
+     "sides": "Government of Rwanda vs FDLR-FOCA",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Rwanda"
+    }
+   ]
+  },
+  "706": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "337",
+     "sides": "Government of Somalia vs Al-Shabaab",
+     "intensity": 2,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Somalia"
+    },
+    {
+     "id": "14197",
+     "sides": "Government of Somalia vs IS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "Somalia"
+    }
+   ]
+  },
+  "728": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "11345",
+     "sides": "Government of South Sudan vs SPLM/A - IO",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "South Sudan"
+    }
+   ]
+  },
+  "729": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "309",
+     "sides": "Government of Sudan vs RSF, SFA, SPLM/A-North",
+     "intensity": 2,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Sudan"
+    }
+   ]
+  },
+  "760": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "302",
+     "sides": "Government of Israel vs Government of Syria",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Golan Heights",
+     "location": "Israel, Syria"
+    },
+    {
+     "id": "13604",
+     "sides": "Government of Syria vs IS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "Syria"
+    },
+    {
+     "id": "299",
+     "sides": "Government of Syria vs Military Council for the Liberation of Syria",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Syria"
+    },
+    {
+     "id": "13809",
+     "sides": "Government of Syria vs SDF",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government and territory",
+     "territory": "Rojava Kurdistan",
+     "location": "Syria"
+    }
+   ]
+  },
+  "764": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "294",
+     "sides": "Government of Cambodia (Kampuchea) vs Government of Thailand",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Common Border",
+     "location": "Cambodia (Kampuchea), Thailand"
+    },
+    {
+     "id": "423",
+     "sides": "Government of Thailand vs Patani insurgents",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Patani",
+     "location": "Thailand"
+    }
+   ]
+  },
+  "768": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "358",
+     "sides": "Government of Togo vs JNIM",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Togo"
+    }
+   ]
+  },
+  "792": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "354",
+     "sides": "Government of Turkey vs PKK",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "Kurdistan",
+     "location": "Turkey"
+    }
+   ]
+  },
+  "804": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "13243",
+     "sides": "Government of Russia (Soviet Union) vs Government of Ukraine",
+     "intensity": 2,
+     "type": "Interstate",
+     "incompatibility": "Government and territory",
+     "territory": "Crimea",
+     "location": "Russia (Soviet Union), Ukraine"
+    }
+   ]
+  },
+  "826": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "16099",
+     "sides": "Government of United Kingdom, Government of United States of America vs Government of Yemen (North Yemen)",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Red Sea, Bab al Mandab and Gulf of Aden",
+     "location": "United Kingdom, United States of America, Yemen (North Yemen)"
+    }
+   ]
+  },
+  "840": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "16099",
+     "sides": "Government of United Kingdom, Government of United States of America vs Government of Yemen (North Yemen)",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Red Sea, Bab al Mandab and Gulf of Aden",
+     "location": "United Kingdom, United States of America, Yemen (North Yemen)"
+    }
+   ]
+  },
+  "854": {
+   "intensity": 2,
+   "conflicts": [
+    {
+     "id": "360",
+     "sides": "Government of Burkina Faso vs JNIM",
+     "intensity": 2,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Burkina Faso"
+    },
+    {
+     "id": "13840",
+     "sides": "Government of Burkina Faso vs IS",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Territory",
+     "territory": "Islamic State",
+     "location": "Burkina Faso"
+    }
+   ]
+  },
+  "887": {
+   "intensity": 1,
+   "conflicts": [
+    {
+     "id": "16470",
+     "sides": "Government of Israel vs Government of Yemen (North Yemen)",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Israel, Yemen (North Yemen)"
+    },
+    {
+     "id": "16099",
+     "sides": "Government of United Kingdom, Government of United States of America vs Government of Yemen (North Yemen)",
+     "intensity": 1,
+     "type": "Interstate",
+     "incompatibility": "Territory",
+     "territory": "Red Sea, Bab al Mandab and Gulf of Aden",
+     "location": "United Kingdom, United States of America, Yemen (North Yemen)"
+    },
+    {
+     "id": "230",
+     "sides": "Government of Yemen (North Yemen) vs Forces of the Presidential Leadership Council",
+     "intensity": 1,
+     "type": "Internationalized intrastate",
+     "incompatibility": "Government",
+     "territory": null,
+     "location": "Yemen (North Yemen)"
+    },
+    {
+     "id": "402",
+     "sides": "Government of Yemen (North Yemen) vs STC",
+     "intensity": 1,
+     "type": "Intrastate",
+     "incompatibility": "Territory",
+     "territory": "South Yemen",
+     "location": "Yemen (North Yemen)"
+    }
+   ]
+  }
+ }
+}

@@ -7,6 +7,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.concurrency import run_in_threadpool
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from briefing import build_briefing, load_conflicts
@@ -14,6 +15,8 @@ from briefing import build_briefing, load_conflicts
 STATIC_DIR = Path(__file__).parent / "static"
 
 app = FastAPI(title="Atlas of Need")
+# Data files the page fetches, e.g. /static/conflicts.json (built by scripts/build_conflicts.py).
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 @app.get("/", include_in_schema=False)

@@ -1,1 +1,65 @@
-
+{
+  "iso3": "SDN",
+  "name": "Sudan",
+  "updated": "2025-01",
+  "current_situation": {
+    "summary": "Sudan is experiencing one of the world's worst humanitarian crises, triggered by open war between the Sudanese Armed Forces (SAF) and the Rapid Support Forces (RSF) that broke out on 15 April 2023. The conflict has spread from Khartoum across Darfur, Kordofan, and other regions. Both sides have been credibly accused of massacres, sexual violence, and deliberate obstruction of aid. The RSF seized most of Khartoum by mid-2023; fighting for the capital continued into 2025.",
+    "source": "OCHA Sudan",
+    "date": "2025-01",
+    "url": "https://reliefweb.int/country/sdn"
+  },
+  "people_in_need": {
+    "figure": "Approximately 30.4 million people in humanitarian need as of late 2024 — the largest humanitarian crisis in the world by number of people in need.",
+    "source": "OCHA Sudan Humanitarian Needs Overview 2025",
+    "date": "2024-11",
+    "url": "https://reliefweb.int/report/sudan/sudan-humanitarian-needs-overview-2025"
+  },
+  "affected_locations": {
+    "summary": "Khartoum state (site of sustained urban warfare), North Darfur (El Fasher under siege), South Darfur, West Darfur, North Kordofan, Gezira state, Sennar, Blue Nile, and Kassala are all affected by conflict or mass displacement. El Fasher is the last major city in Darfur not under RSF control and has been under siege since 2024.",
+    "source": "OCHA Sudan",
+    "date": "2025-01",
+    "url": "https://reliefweb.int/country/sdn"
+  },
+  "displacement": {
+    "summary": "Over 11 million people internally displaced — the largest IDP crisis in the world as of early 2025. Over 2.1 million Sudanese have fled to Chad, Egypt, South Sudan, Ethiopia, and CAR. Total displacement surpasses 13 million people.",
+    "source": "UNHCR Sudan",
+    "date": "2025-01",
+    "url": "https://www.unhcr.org/countries/sudan"
+  },
+  "food_security": {
+    "summary": "Over 25 million people — more than half the population — face acute food insecurity (IPC Phase 3+) as of mid-2024. Famine (IPC Phase 5) was confirmed in Zamzam camp, North Darfur, in August 2024, the first famine confirmed anywhere in the world since 2017. Emergency (Phase 4) conditions were found in six additional areas.",
+    "source": "IPC Sudan Famine Review August 2024",
+    "date": "2024-08",
+    "url": "https://www.ipcinfo.org/ipc-country-analysis/details-map/en/c/1157530/"
+  },
+  "health": {
+    "summary": "Over 70-80% of health facilities in conflict-affected areas are non-functional, damaged, or occupied by armed forces. A catastrophic cholera outbreak (330,000+ cases, 4,700+ deaths) was ongoing as of end 2024. Dengue, malaria, and measles outbreaks compound an already collapsed health system. Sudan's three main referral hospitals in Khartoum were taken over and destroyed.",
+    "source": "WHO Sudan Health Emergency",
+    "date": "2024-12",
+    "url": "https://www.who.int/countries/sdn/"
+  },
+  "water_sanitation": {
+    "summary": "Water infrastructure in Khartoum and other major cities has been destroyed or is non-functional due to fighting, power cuts, and looting. Approximately 14 million people lack access to safe water. Open defecation in displacement sites contributes to cholera and other waterborne disease outbreaks.",
+    "source": "UNICEF Sudan",
+    "date": "2024-12",
+    "url": "https://www.unicef.org/sudan/"
+  },
+  "shelter": {
+    "summary": "Over 11 million IDPs are living in schools, mosques, public buildings, host communities, and open spaces across Sudan. Khartoum, once a city of 8 million, has been largely emptied; residential neighbourhoods have been destroyed or looted. Displacement camps in Darfur and border areas are severely overcrowded.",
+    "source": "IOM Sudan Displacement Tracking Matrix",
+    "date": "2024-12",
+    "url": "https://dtm.iom.int/sudan"
+  },
+  "children_education": {
+    "summary": "Approximately 19 million children are out of school — the highest number in the world. Schools across conflict-affected states are damaged, occupied, or closed. Recruitment of children by armed groups (particularly the RSF) has been documented. Grave violations against children are reported by the UN Monitoring and Reporting Mechanism.",
+    "source": "UNICEF Sudan",
+    "date": "2024-12",
+    "url": "https://www.unicef.org/sudan/"
+  },
+  "humanitarian_response": {
+    "summary": "The 2024 Sudan HRP requested USD 2.7 billion; funding reached approximately 37% by year-end. Both SAF and RSF systematically obstruct humanitarian convoys. Access to Darfur is critically constrained. The Adre border crossing from Chad to North Darfur is the primary lifeline for millions in besieged areas. Aid workers have been killed and detained. The crisis is widely described as the world's most neglected emergency.",
+    "source": "OCHA Financial Tracking Service — Sudan",
+    "date": "2024-12",
+    "url": "https://fts.unocha.org/countries/212/summary/2024"
+  }
+}

@@ -51,6 +51,8 @@ BASELINE_DAYS = 45      # "earlier" reports for What's new: from 45 days ago up 
 MAX_NEW = 12            # new passages shown to Bob, one per report so more of the week's reports are covered
 MAX_EARLIER = 6         # earlier passages shown to Bob for comparison
 CHANGE_CATEGORIES = ("displacement", "areas", "access", "needs", "other")
+PLACES_DAYS = 45        # map bubbles: reports from the last 45 days...
+PLACES_DELAY_DAYS = 2   # ...except the last 2, so the map never shows the newest, still-unfolding reports
 
 # Keyword fallback, only used when the embedding model is unavailable.
 STOP = set("the a an and or of to in on for with is are was were be by at from as that this it its into than then".split())
@@ -620,3 +622,19 @@ def build_update(iso3: str, audience: str = "donors", days: int = 7, today: date
         except Exception as e:
             print("Bob failed, using fallback:", str(e)[:200])
     return renumber_sources({**base, "mode": "fallback", **fallback_update(reports), "sources": sources})
+
+
+# --- Places: which regions this period's reports mention ---------------------------------------------------------
+
+def build_places(iso3: str, today: date | None = None) -> dict:
+    """Regions mentioned in archived reports, spelling variants resolved (see places.py). Deliberately delayed and
+    regional only: no town locations, no reports from the last PLACES_DELAY_DAYS days."""
+    import places
+    today = today or date.today()
+    end = today - timedelta(days=PLACES_DELAY_DAYS)
+    start = today - timedelta(days=PLACES_DAYS)
+    reports = [r for r in load_archive(iso3) if start <= _parse_date(r["date"]) <= end]
+    summary = places.summarize(iso3, reports)
+    return {**_base(iso3), "window": {"from": start.isoformat(), "to": end.isoformat()}, "delayDays": PLACES_DELAY_DAYS,
+            "totalReports": len(reports), "reportsWithPlaces": len({x["url"] for r in summary["regions"] for x in r["latest"]}),
+            **summary}

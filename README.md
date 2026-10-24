@@ -37,6 +37,7 @@ The server reloads automatically when you edit any `.py` file. Edits to `static/
 - **Scroll** to zoom, **drag** to pan
 - **Tab / Enter** to move between and select countries with the keyboard
 - **Ukraine and Sudan** (in red) open a briefing panel: cited summary, sources with dates, an "Ask" box for focused questions, and official links
+- **Region bubbles** appear when you zoom into Sudan or Ukraine: one per state / oblast, sized by how many recent reports mention places there, with spelling variants merged ("El Fasher", "Al-Fashir", "El-Fasher" → El Fasher, North Darfur). Hover to see the spellings found, click for the reports
 - **Weekly update ↗** (in the panel) opens `/update`: a one-page, sourced situation update that a small NGO or diaspora organisation can send to donors or members. Pick the audience, optionally add your organisation's name (printed only, never sent to the AI), generate, edit any text in place, then **Copy text** for an email or **Print / Save PDF**
 - **What's new · 7 days** (tab in the panel) compares the last 7 days of reports with the weeks before: newly affected areas, displacement, humanitarian access, needs and funding. Each item cites the new report and, when it updates an earlier figure, the earlier one
 
@@ -90,6 +91,8 @@ Click Ukraine or Sudan: the badge should read **"AI summary · IBM Bob"**. A bri
 
 - `POST /api/update` with `{"iso3": "SDN", "audience": "donors"|"members", "days": 7}` returns a one-page draft: `{country, mode, audience, window, headline, summary, keyFigures: [{label, text, date, cites}], this_week, needs, response, gaps, sources: [{n, title, source, date, url, kind: "report"|"figure"}]}`. Each section is a list of `{text, cites}`.
 
+- `GET /api/places/{iso3}` returns the regions recent reports mention: `{window: {from, to}, delayDays, totalReports, regions: [{code, name, lat, lon, disputed, reports, mentions, spellings, places, latest: [{title, source, date, url}]}], source}`. Regions only: towns never get coordinates.
+
 Interactive API docs: http://localhost:3001/docs
 
 ## Data
@@ -129,6 +132,26 @@ Who it's for: small NGOs and diaspora organisations that send donors or members 
 - **One page:** at most 3 / 4 / 3 / 2 bullets per section and about 330 AI-written words. Trailing bullets are trimmed if needed. Only cited sources are listed, numbered in reading order with each URL once, as one short line each (publisher, date, shortened title, site) in two columns. The full link is clickable in the PDF and written out in Copy text. Tested: 8 of 8 generated drafts printed on one A4 page.
 - It's a **draft to review**: every text block is editable, and the footer says it was AI-assisted.
 
+## Place names and region bubbles
+
+The same place is spelled many ways in English ("El Fasher", "Al-Fashir", "El-Fasher"; "Kharkov" vs "Kharkiv"), so keyword search misses reports. `places.py` resolves the variants:
+
+1. **Gazetteer:** `python scripts/build_gazetteer.py` downloads [GeoNames](https://www.geonames.org) (CC BY 4.0) into `data/places/<iso3>.json`: every state / oblast with one representative point, and towns with their Latin-script spelling variants. Towns get **no coordinates**.
+2. **Matching:** names in report text are normalised (accents, apostrophes, hyphens, a leading "al-/el-", a trailing "state/oblast/camp" removed) and looked up. Several guards prevent false matches:
+   - Macro-regions ("Kordofan", "Darfur") are skipped.
+   - A one-word name followed by another capitalised word is treated as a person ("Volodymyr Zelensky").
+   - Villages without population data need a location cue ("in", "near", "camp").
+   - A report's own "X, West Kordofan" overrides GeoNames for small places, but not in lists.
+3. **AI for the rest:** `python scripts/resolve_places.py` sends names GeoNames doesn't know, or that exist in several regions (e.g. Tawila), to IBM Bob with their sentence and the region list. Answers go to `data/places/aliases_<iso3>.json` with `reviewed: false`. **Review them:** in testing Bob placed "Kalogie" in the right state but "corrected" its spelling to a different town (Kadugli). That was fixed by hand and is noted in the file.
+
+**Responsible-AI choices:**
+- **Regions only:** bubbles are at state / oblast level, never towns or coordinates.
+- **Delayed:** reports from the last 2 days are held back (`PLACES_DELAY_DAYS` in `briefing.py`), and the date range is shown on the map.
+- **Disputed areas:** Abyei gets its own dashed bubble, "Abyei Area (disputed)", instead of being counted under a Sudanese state.
+- **Report counts only:** bubbles count reports that mention a region, not events or casualties.
+
+**Known limit:** a name shared with a place abroad can still slip through. In testing, a report about a strike on Sasovo in Russia matched a Ukrainian village with the same name.
+
 ## Country profiles
 
 `data/profiles/<iso3>.json` holds hand-picked key figures for Sudan and Ukraine (people in need, displacement, food, health, education, funding...). Each fact links to a specific report from an established source (UN agencies, IPC, OHCHR, IRC, Refugees International...), is dated with that report's publication date, and carries the exact sentence it is based on. Anything we couldn't source for 2026 is listed under `not_covered` instead of being filled in.
@@ -160,6 +183,9 @@ scripts/build_conflicts.py  Builds static/conflicts.json from the raw UCDP CSV
 scripts/fetch_reports.py    Refreshes data/reports/ from ReliefWeb
 scripts/verify_profiles.py  Checks every profile quote against its source
 scripts/add_report.py       Adds a report from any URL to the archive
+scripts/build_gazetteer.py  Builds data/places/ from GeoNames
+scripts/resolve_places.py   Asks IBM Bob to place unknown / ambiguous names (saved for review)
+places.py                   Place-name matching with spelling variants, region summaries
 scripts/archive.py          Shared archive helpers (data/archive/<iso3>.json)
 .env.example                Template for .env.local (BOB_API_KEY)
 tests/                      Backend tests

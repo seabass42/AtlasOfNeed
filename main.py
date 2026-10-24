@@ -18,7 +18,7 @@ from pydantic import BaseModel, Field
 # Secrets such as BOB_API_KEY live in .env.local (git-ignored). Variables already set in the shell take priority.
 load_dotenv(Path(__file__).parent / ".env.local")
 
-from briefing import build_briefing, build_changes, build_update, load_conflicts, warm_up  # noqa: E402
+from briefing import build_briefing, build_changes, build_places, build_update, load_conflicts, warm_up  # noqa: E402
 
 STATIC_DIR = Path(__file__).parent / "static"
 PROFILES_DIR = Path(__file__).parent / "data" / "profiles"
@@ -56,6 +56,14 @@ def profile(iso3: str):
     if not f.exists():
         raise HTTPException(404, "No profile for this country")
     return json.loads(f.read_text(encoding="utf-8"))
+
+
+@app.get("/api/places/{iso3}")
+def places_for(iso3: str):
+    """Regions that recent reports mention (spelling variants resolved), for the map bubbles. Regional only, delayed."""
+    if not re.fullmatch(r"[A-Za-z]{3}", iso3):
+        raise HTTPException(400, "Bad country code")
+    return build_places(iso3.upper())
 
 
 @app.get("/api/conflicts")

@@ -1,5 +1,6 @@
 # Run from the project folder: python -m pytest tests -q
 import json
+from datetime import date
 
 import pytest
 from fastapi.testclient import TestClient
@@ -200,3 +201,36 @@ def test_update_is_trimmed_to_fit_one_page():
         **{k: [{"text": long, "cites": [1]} for _ in range(5)] for k in briefing.UPDATE_SECTIONS}}, n=3, n_reports=3)
     assert sum(len(b["text"].split()) for k in briefing.UPDATE_SECTIONS for b in out[k]) <= briefing.WORD_BUDGET + 40
     assert out["summary"] and out["needs"] and out["response"] and len(out["this_week"]) >= 2
+
+
+# --- Places -------------------------------------------------------------------------------------------------------
+import places  # noqa: E402
+
+
+def regions_in(text, iso3="SDN"):
+    idx = places.load_index(iso3)
+    return [idx["regions"][m["region"]]["name"] for m in places.find_mentions(text, iso3)[0]]
+
+
+def test_spelling_variants_resolve_to_one_place():
+    for spelling in ("El Fasher", "Al-Fashir", "El-Fasher", "Al Fasher"):
+        assert regions_in(f"Fighting continued in {spelling} this week.") == ["North Darfur"], spelling
+    for spelling in ("Kharkiv", "Kharkov", "Kharkivska oblast"):
+        assert regions_in(f"Strikes hit {spelling} overnight.", "UKR") == ["Kharkiv"], spelling
+
+
+def test_people_and_lists_are_not_misplaced():
+    assert regions_in("President Volodymyr Zelensky spoke in Kyiv.", "UKR") == ["Kyiv city"]
+    assert regions_in("Attacks hit El Fasher, Khartoum and Kordofan.") == ["North Darfur", "Khartoum"]  # a list, not "El Fasher in Khartoum"
+    assert set(regions_in("A truck was hit in Dibab, West Kordofan.")) == {"West Kordofan"}  # GeoNames says Al Jazirah; the report wins for a small place
+
+
+def test_disputed_area_is_not_counted_under_a_state():
+    assert regions_in("Drone attacks struck a market in Abyei.") == ["Abyei Area (disputed)"]
+
+
+def test_api_places_is_regional_and_delayed():
+    d = client.get("/api/places/SDN").json()
+    assert d["delayDays"] >= 1 and d["window"]["to"] < date.today().isoformat()
+    assert d["regions"] and all(set(r) >= {"name", "lat", "lon", "reports", "spellings"} for r in d["regions"])
+    assert not any("places" in r and r.get("coordinates") for r in d["regions"])

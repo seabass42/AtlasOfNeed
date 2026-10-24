@@ -383,7 +383,7 @@ function loadBriefing(meta, question) {
   briefingBadgesEl.innerHTML = "";
   briefingBodyEl.innerHTML = "";
   briefingBodyEl.append(el("p", { className: "loading" }, el("span", { className: "spinner" }),
-    question ? "Searching the sources for your question…" : "Gathering sources and writing the briefing… this can take up to a minute."));
+    question ? "Searching the sources for your question…" : "Gathering sources and writing the briefing… this usually takes a few seconds."));
   fetch("/api/briefing", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

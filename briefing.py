@@ -19,6 +19,8 @@ DATA_DIR = Path(__file__).parent / "data"
 REPORTS_DIR = DATA_DIR / "reports"
 MAX_PASSAGES = 8
 BOB_TIMEOUT_S = 60
+# The briefing only needs the passages in the prompt, so Bob gets no tools (files, commands, MCP, subagents...).
+BOB_TOOL_GROUPS_OFF = "read,edit,execute,mcp,skill,todo,subagent,mode"
 
 STOP = set("the a an and or of to in on for with is are was were be by at from as that this it its into than then".split())
 DEFAULT_QUERY = "displacement civilians humanitarian access food insecurity casualties health aid needs funding"
@@ -79,7 +81,7 @@ def build_prompt(country: str, question: str, passages: list[dict]) -> str:
     numbered = "\n\n".join(f"[{i + 1}] ({p['source']}, {p['date']}) {p['text']}" for i, p in enumerate(passages))
     focus = f"Focus on this question: {question}\n" if question else ""
     return f"""You are writing a short humanitarian situation briefing about {country} for journalists, students and NGO staff.
-Use ONLY the numbered passages below. Do not use outside knowledge. Do not predict events, give military analysis,
+Use ONLY the numbered passages below. Do not use any tools and do not use outside knowledge. Do not predict events, give military analysis,
 take sides, or give safety or evacuation advice. If the passages do not cover something, say so.
 {focus}
 Return ONLY valid JSON, no other text, in this exact shape:
@@ -94,8 +96,10 @@ def run_bob(prompt: str) -> str:
     # Run in an empty temp folder so Bob cannot read or change project files.
     with tempfile.TemporaryDirectory(prefix="bob-") as cwd:
         r = subprocess.run(
-            ["bob", "run", "--mode", "ask", "--max-turns", "1", "--format", "json", prompt],
-            cwd=cwd, env=os.environ.copy(), capture_output=True, text=True, timeout=BOB_TIMEOUT_S,
+            ["bob", "run", "--mode", "ask", "--max-turns", "1", "--format", "json",
+             "--disable-tool-groups", BOB_TOOL_GROUPS_OFF, "--disable-mcp", "--disable-subagents", prompt],
+            # stdin=DEVNULL: bob reads piped stdin as extra input and would otherwise wait on the server's stdin.
+            cwd=cwd, env=os.environ.copy(), stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=BOB_TIMEOUT_S,
         )
     if r.returncode != 0:
         raise RuntimeError(r.stderr or f"bob exited {r.returncode}")
@@ -103,20 +107,32 @@ def run_bob(prompt: str) -> str:
 
 
 def extract_answer(stdout: str) -> dict:
-    """bob's JSON wrapper format may vary; find the model's text, then the JSON inside it."""
-    text = stdout
-    try:
-        outer = json.loads(stdout)
-        if isinstance(outer, dict):
-            text = next((outer[k] for k in ("result", "response", "output", "text", "message") if k in outer), outer)
-        if not isinstance(text, str):
-            text = json.dumps(text)
-    except json.JSONDecodeError:
-        pass
-    start, end = text.find("{"), text.rfind("}")
-    if start < 0 or end < start:
+    """Find the model's text in Bob's output, then the JSON object inside it.
+
+    Bob 2.x prints one JSON object per line: optional {"type":"error",...} lines, then {"type":"result","last_message":...}.
+    Older versions used other key names, so those are still accepted.
+    """
+    text = None
+    for line in stdout.splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(event, dict):
+            continue
+        if event.get("type") == "error":
+            raise ValueError(f"Bob error: {event.get('message', '')}")
+        found = next((event[k] for k in ("last_message", "result", "response", "output", "text", "message")
+                      if isinstance(event.get(k), str)), None)
+        if found is not None:
+            text = found
+    if text is None:
+        text = stdout  # not JSON lines: look for the answer in the raw output
+    start = text.find("{")
+    if start < 0:
         raise ValueError("No JSON in Bob output")
-    return json.loads(text[start:end + 1])
+    answer, _ = json.JSONDecoder().raw_decode(text[start:])  # ignores any text after the object, e.g. a closing ``` fence
+    return answer
 
 
 def validate(ans: dict, n: int) -> dict:

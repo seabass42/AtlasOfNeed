@@ -426,6 +426,23 @@
     ]
    }
   },
+  "275": {
+   "intensity": 0,
+   "conflicts": [],
+   "current": {
+    "intensity": 2,
+    "deaths": 1133,
+    "conflicts": [
+     {
+      "deaths": 1133,
+      "events": 624,
+      "sides": "Government of Israel vs Palestinian Mujahideen Movement",
+      "intensity": 2
+     }
+    ],
+    "note": "Counted from events located in Gaza Strip and West Bank. UCDP records this conflict under Israel."
+   }
+  },
   "332": {
    "intensity": 2,
    "conflicts": [
@@ -670,25 +687,7 @@
      "territory": "Southern Lebanon",
      "location": "Israel"
     }
-   ],
-   "current": {
-    "intensity": 2,
-    "deaths": 1161,
-    "conflicts": [
-     {
-      "deaths": 1136,
-      "events": 626,
-      "sides": "Government of Israel vs Palestinian Mujahideen Movement",
-      "intensity": 2
-     },
-     {
-      "deaths": 25,
-      "events": 8,
-      "sides": "Government of Iran vs Government of Israel, Government of United States of America",
-      "intensity": 1
-     }
-    ]
-   }
+   ]
   },
   "404": {
    "intensity": 1,

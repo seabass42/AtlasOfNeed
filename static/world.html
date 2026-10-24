@@ -273,7 +273,7 @@
   </section>
 
   <aside class="legend" aria-label="Map legend">
-    <p class="eyebrow">Briefings available</p>
+    <p class="eyebrow">Armed conflict</p>
     <p class="legend-row"><span class="swatch war"></span>War</p>
     <p class="note" id="legend-source">Loading conflict data…</p>
   </aside>
@@ -341,16 +341,20 @@ const countryPaths = g.selectAll("path.country")
   });
 countryPaths.append("title").text(d => d.properties.name);
 
-// For the MVP only the countries we have briefings for are highlighted: Ukraine (804) and Sudan (729).
-// Both are classified as war by UCDP, and the conflict details shown come from UCDP data (see scripts/build_conflicts.py):
-// preliminary events for the current year ("current") when available, otherwise the final data for the last full year.
-const FOCUS = new Set(["804", "729"]);
+// Highlighted: every country or territory with a war-level conflict (1,000+ battle-related deaths) in the current year's
+// preliminary UCDP data, counted where the fighting happened. Without current data, the last full year is used.
+// Nothing is picked by hand.
+// See scripts/build_conflicts.py. Briefings exist only for countries with hasBriefing in /api/conflicts.
 const INTENSITY_LABEL = { 1: "Minor conflict", 2: "War" };
-const conflictFor = (d) => (conflictData && FOCUS.has(d.id) && conflictData.countries[d.id]) || null;
-const levelOf = (c) => (c.current || c).intensity;
+// With current-year data, a country without a current entry had no conflict with 25+ deaths on its territory this year.
+const levelOf = (c) => conflictData.current_source ? (c.current ? c.current.intensity : 0) : c.intensity;
+const conflictFor = (d) => {
+  const c = conflictData && d.id && conflictData.countries[d.id];
+  return c && levelOf(c) === 2 ? c : null;
+};
 const sourceLink = (src, text) => Object.assign(document.createElement("a"), { href: src.url, target: "_blank", rel: "noopener", textContent: text });
 
-fetch("/static/conflicts.json")
+fetch("/static/conflicts.json", { cache: "no-cache" })  // revalidate, so a rebuilt file shows up without a hard refresh
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(data => {
     conflictData = data;
@@ -360,7 +364,8 @@ fetch("/static/conflicts.json")
     if (cur) {
       sourceEl.append(`These are classified as war because they had 1,000+ battle-related deaths in ${cur.through.slice(0, 4)} `
         + `(1 Jan – ${formatDate(cur.through)}, preliminary `, sourceLink(cur, "UCDP candidate data"),
-        `) and in ${src.year} (`, sourceLink(src, `${src.name} v${src.version}`), ").");
+        "). Deaths are counted where the fighting happened, not by nationality: soldiers of any army killed in Ukraine "
+        + "count for Ukraine, and fighting in Gaza and the West Bank counts for Palestine.");
     } else {
       sourceEl.append(`These are classified as war because they had 1,000+ battle-related deaths in ${src.year}, according to the `,
         sourceLink(src, `${src.name} v${src.version}`), ".");
@@ -744,9 +749,14 @@ function renderConflictInfo(d) {
     list.append(el("li", { className: k.intensity === 2 ? "war" : "" }, k.sides, el("span", { className: "conflict-meta" }, meta)));
   }
   conflictInfoEl.append(status, list);
+  if (cur && cur.note) conflictInfoEl.append(el("p", { className: "note" }, cur.note));
+  if (!briefingByMapId[d.id]) {
+    const withBriefings = Object.values(briefingByMapId).map(m => m.name).join(" and ");
+    conflictInfoEl.append(el("p", { className: "note" }, `No AI briefing for this country yet${withBriefings ? `: only ${withBriefings} have saved reports` : ""}.`));
+  }
   if (cur) {
     conflictInfoEl.append(el("p", { className: "note" },
-      `Preliminary UCDP data, updated monthly. Final ${conflictData.source.year} data: ${INTENSITY_LABEL[c.intensity].toLowerCase()}.`));
+      `Preliminary UCDP data, updated monthly. Final ${conflictData.source.year} data: ${(INTENSITY_LABEL[c.intensity] || "none recorded here").toLowerCase()}.`));
   }
   conflictInfoEl.hidden = false;
 }

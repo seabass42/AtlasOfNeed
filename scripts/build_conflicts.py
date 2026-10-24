@@ -23,6 +23,10 @@ CANDIDATE_FILE = "GEDEvent_v26_01_26_09.csv"
 CANDIDATE_URL = f"https://ucdp.uu.se/downloads/candidateged/{CANDIDATE_FILE}"
 CANDIDATE_CSV = ROOT / "data" / CANDIDATE_FILE
 MIN_DEATHS = 25    # UCDP's threshold for counting an armed conflict in a year
+# Current-year totals count deaths where the fighting happened (each event's location), not by nationality: Russian
+# soldiers killed in Ukraine count toward Ukraine. UCDP files events in Gaza and the West Bank under Israel's country
+# code; their first-level area (adm_1) says where they happened, so they're counted for Palestine (map id 275).
+TERRITORIES = {"Gaza Strip": "275", "West Bank": "275"}
 WAR_DEATHS = 1000  # UCDP's threshold for "war"
 
 # UCDP uses Gleditsch-Ward country codes; the map uses ISO 3166-1 numeric ids.
@@ -67,7 +71,7 @@ def current_year_conflicts():
     through = max(e["date_end"][:10] for e in events)
     totals = defaultdict(lambda: {"deaths": 0, "events": 0})
     for e in events:
-        iso = GW_TO_ISO.get(e["country_id"])
+        iso = TERRITORIES.get(e["adm_1"]) or GW_TO_ISO.get(e["country_id"])
         if iso:  # countries outside GW_TO_ISO had no conflict in 2025 and aren't highlighted
             t = totals[(iso, e["conflict_new_id"])]
             t["deaths"] += int(e["best"] or 0)
@@ -82,6 +86,9 @@ def current_year_conflicts():
         conflicts.sort(key=lambda c: -c["deaths"])
         out[iso] = {"intensity": max(c["intensity"] for c in conflicts), "deaths": sum(c["deaths"] for c in conflicts),
                     "conflicts": conflicts}
+        if iso in TERRITORIES.values():
+            out[iso]["note"] = ("Counted from events located in " + " and ".join(k for k, v in TERRITORIES.items() if v == iso)
+                                + ". UCDP records this conflict under Israel.")
     return out, through
 
 

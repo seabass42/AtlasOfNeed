@@ -1,6 +1,8 @@
 # Atlas of Need
 
-> Temporary README for the SpartHill 2026 MVP: a world map where you click a country at war (Ukraine, Sudan) to get an AI-written humanitarian briefing, cited and dated, built only from recent ReliefWeb reports.
+🏆 **Winner of Greatest Real-World Impact at SpartHill Hacks 2026**
+
+ A world map where you click a country at war (Ukraine, Sudan) to get an AI-written humanitarian briefing, cited and dated, built only from recent ReliefWeb reports. Atlas of Need can also draft a weekly update covering the past 7 days, with every point linked to its source, for NGOs and diaspora organizations to send to their donors. That means less time researching and more time helping people in need.
 
 ## Requirements
 
@@ -76,7 +78,7 @@ Click Ukraine or Sudan: the badge should read **"AI summary · IBM Bob"**. A bri
 | `A license agreement is required` | Do step 2. |
 | `Invalid or expired API key` | Make a new Inference key (step 3). Also check your terminal doesn't have an old key exported: a `BOB_API_KEY` set in the shell **overrides** `.env.local`. Run `unset BOB_API_KEY` (or open a new terminal), then restart. |
 
-**How retrieval works (the "R" in RAG):** the reports are split into passages and embedded with a small local model (`BAAI/bge-small-en-v1.5` via fastembed, about 67 MB, downloaded into `.cache/` on first run). A question is embedded the same way, and the passages with the closest meaning are picked, so "is anyone starving?" finds passages about famine and food insecurity without sharing a word. If even the best passage scores below `MIN_SIMILARITY` (0.62), the question is answered with "the reports don't cover this" and Bob isn't called. The server embeds the reports at startup and caches the vectors in `.cache/embeddings/`. If the model can't be loaded (fastembed not installed, or offline on the very first run), it falls back to keyword matching.
+**How retrieval works:** the reports are split into passages and embedded with a small local model (`BAAI/bge-small-en-v1.5` via fastembed, about 67 MB, downloaded into `.cache/` on first run). A question is embedded the same way, and the passages with the closest meaning are picked, so "is anyone starving?" finds passages about famine and food insecurity without sharing a word. If even the best passage scores below `MIN_SIMILARITY` (0.62), the question is answered with "the reports don't cover this" and Bob isn't called. The server embeds the reports at startup and caches the vectors in `.cache/embeddings/`. If the model can't be loaded (fastembed not installed, or offline on the very first run), it falls back to keyword matching.
 
 **How Bob is used:** `briefing.py` runs `bob run` in an empty temporary folder with every tool group, MCP and subagents disabled. Bob can only summarize the numbered passages in the prompt, and any bullet without a valid citation is dropped.
 

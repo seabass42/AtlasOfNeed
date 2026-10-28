@@ -4,6 +4,8 @@
 
  A world map where you click a country at war (Ukraine, Sudan) to get an AI-written humanitarian briefing, cited and dated, built only from recent ReliefWeb reports. Atlas of Need can also draft a weekly update covering the past 7 days, with every point linked to its source, for NGOs and diaspora organizations to send to their donors. That means less time researching and more time helping people in need.
 
+![Demo](demo.gif)
+
 ## Requirements
 
 - Python 3.10+
